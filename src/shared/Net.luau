@@ -34,9 +34,6 @@ Net.Events = {
 	"Equip",
 	"PlayEmote",
 	"PilotInput",
-	"UseTool",
-	"SpectateRequest",
-	"ClientReady",
 }
 
 Net.Functions = {

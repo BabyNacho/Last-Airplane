@@ -135,9 +135,6 @@ GameConfig.RateLimits = {
 	PilotInput = { 20, 14 },
 	Emote = { 3, 1 },
 	GetProfile = { 6, 2 },
-	Keypad = { 5, 1 },
-	Spectate = { 6, 3 },
-	UseTool = { 20, 12 },
 }
 
 GameConfig.Data = {

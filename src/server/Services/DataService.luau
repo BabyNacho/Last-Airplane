@@ -265,8 +265,12 @@ function DataService:Snapshot(player: Player)
 		return nil
 	end
 	local owned = {}
-	for id in profile.Owned do
-		table.insert(owned, id)
+	if Registry.ShopService then
+		owned = Registry.ShopService:State(player).Owned
+	else
+		for id in profile.Owned do
+			table.insert(owned, id)
+		end
 	end
 	return {
 		Credits = profile.Credits,

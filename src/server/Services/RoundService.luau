@@ -372,7 +372,11 @@ local function runRound()
 		returnToLobby(player)
 	end
 	if results then
-		Net.FireList("Results", Players:GetPlayers(), results)
+		for _, player in Players:GetPlayers() do
+			local payload = table.clone(results.Shared)
+			payload.Personal = results.Personal[player]
+			Net.Event("Results"):FireClient(player, payload)
+		end
 	end
 	waitPhase()
 
