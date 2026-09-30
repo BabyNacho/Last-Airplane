@@ -90,6 +90,15 @@ local function canAct(player: Player, def): (boolean, string?)
 	if not humanoid or humanoid.Health <= 0 then
 		return false, nil
 	end
+	-- defense in depth: never trust that the triggering client was actually in range
+	if def._Anchor and def.Range then
+		local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+		local anchor = def._Anchor
+		local position = if anchor:IsA("BasePart") then anchor.Position elseif anchor:IsA("Attachment") then anchor.WorldPosition else nil
+		if root and position and (root.Position - position).Magnitude > def.Range + 6 then
+			return false, nil
+		end
+	end
 	if def.Condition then
 		local ok, result, reason = pcall(def.Condition, player)
 		if not ok then
@@ -104,6 +113,7 @@ local function canAct(player: Player, def): (boolean, string?)
 end
 
 function InteractionService:Add(part: Instance, def): Handle
+	def._Anchor = part
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "Interaction"
 	prompt.ActionText = def.Action or "USE"

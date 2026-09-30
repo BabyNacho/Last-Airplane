@@ -6,6 +6,7 @@
 ]]
 
 local process = require("@lune/process")
+local roblox = require("@lune/roblox")
 
 local Bots = require("./Bots")
 local World = require("./World")
@@ -288,6 +289,130 @@ for seed = 1, 4 do
 		if finished < 2 then
 			table.insert(problems, "only " .. finished .. " rounds finished")
 		end
+		return problems
+	end)
+end
+
+local function visible(gui): boolean
+	local node = gui
+	while node do
+		if node:IsA("GuiObject") and not node.Visible then
+			return false
+		end
+		if node:IsA("ScreenGui") then
+			return node.Enabled
+		end
+		node = node.Parent
+	end
+	return false
+end
+
+local CLIENT_RUNS = {
+	{ Disaster = "CabinFire", Device = nil, Label = "desktop" },
+	{ Disaster = "Depressurization", Device = nil, Label = "desktop" },
+	{ Disaster = "PilotDisappears", Device = { Touch = true, Viewport = roblox.Vector2.new(812, 375) }, Label = "phone" },
+	{ Disaster = "BirdStrike", Device = { Touch = true, Viewport = roblox.Vector2.new(1024, 768) }, Label = "tablet" },
+	{ Disaster = "LightningStorm", Device = { Touch = true, Viewport = roblox.Vector2.new(740, 360) }, Label = "small phone" },
+}
+
+for _, run in CLIENT_RUNS do
+	local disaster = run.Disaster
+	scenario("Client UI (" .. run.Label .. ") + button fuzzing during a full round: " .. disaster, function(world)
+		local problems = {}
+		world:Boot()
+		world:Advance(1)
+		config(world, "GameConfig").StudioForceDisaster = disaster
+		local bots = Bots.attach(world, { Seed = 4242 + #disaster })
+		local me = world:AddPlayer("ClientPlayer")
+		local buddy = world:AddPlayer("Buddy")
+		bots.Add(me)
+		bots.Add(buddy)
+		world:AttachClient(me, run.Device)
+		world:Advance(2)
+		local gui = me:FindFirstChildOfClass("PlayerGui")
+		local screens = {}
+		for _, child in gui:GetChildren() do
+			table.insert(screens, child.Name)
+		end
+		for _, required in { "MainUI", "DecisionUI", "ShopUI", "ProfileUI", "ResultsUI", "EffectsUI", "CockpitUI" } do
+			if not table.find(screens, required) then
+				table.insert(problems, "missing ScreenGui " .. required)
+			end
+		end
+		local clientFolder = world.Game:GetService("StarterPlayer"):FindFirstChild("StarterPlayerScripts"):FindFirstChild("Client")
+		local controllers = clientFolder:FindFirstChild("Controllers")
+		local shop = world.Require(controllers:FindFirstChild("ShopController"))
+		local profile = world.Require(controllers:FindFirstChild("ProfileController"))
+		local pps = world.Game:GetService("ProximityPromptService")
+		local lib = world.M.Library
+		local clicks = 0
+		local rng = 12345
+		local function rand(n: number): number
+			rng = (rng * 48271) % 2147483647
+			return (rng % n) + 1
+		end
+		-- open windows and fuzz buttons while the round plays out
+		lib.spawn(function()
+			shop:Open()
+			lib.wait(1)
+			profile:Open("Records")
+			for _, tab in { "Stats", "Achievements", "Challenges", "Mastery", "Wardrobe" } do
+				profile:Open(tab)
+				lib.wait(0.3)
+			end
+			while true do
+				lib.wait(1.5)
+				local buttons = {}
+				for _, d in gui:GetDescendants() do
+					if d:IsA("TextButton") and visible(d) then
+						table.insert(buttons, d)
+					end
+				end
+				if #buttons > 0 then
+					local button = buttons[rand(#buttons)]
+					world.M.signalFor(button, "MouseButton1Down"):Fire()
+					world.M.signalFor(button, "Activated"):Fire()
+					world.M.signalFor(button, "MouseButton1Up"):Fire()
+					clicks += 1
+				end
+				-- show custom prompt UI for a random nearby prompt
+				local prompts = {}
+				for _, d in world.Game:GetService("Workspace"):GetDescendants() do
+					if d.ClassName == "ProximityPrompt" and d.Enabled then
+						table.insert(prompts, d)
+					end
+				end
+				if #prompts > 0 then
+					local prompt = prompts[rand(#prompts)]
+					pps.PromptShown:Fire(prompt, roblox.Enum.ProximityPromptInputType.Keyboard)
+					pps.PromptButtonHoldBegan:Fire(prompt)
+					lib.wait(0.2)
+					pps.PromptButtonHoldEnded:Fire(prompt)
+					pps.PromptHidden:Fire(prompt)
+					local touchPrompt = prompts[rand(#prompts)]
+					pps.PromptShown:Fire(touchPrompt, roblox.Enum.ProximityPromptInputType.Touch)
+					pps.PromptHidden:Fire(touchPrompt)
+				end
+			end
+		end)
+		local resultsRendered = 0
+		table.insert(world.ClientHandlers, function(remote, player)
+			if remote == "Results" and player == me then
+				lib.delay(0.3, function()
+					local results = gui:FindFirstChild("ResultsUI")
+					resultsRendered = if results then #results:GetDescendants() else 0
+				end)
+			end
+		end)
+		local _, finished = runRounds(world, 1, 800)
+		if finished < 1 then
+			table.insert(problems, "round did not finish")
+		end
+		world:Advance(3)
+		if resultsRendered < 40 then
+			table.insert(problems, "results screen did not render (" .. resultsRendered .. " elements)")
+		end
+		print(string.format("      clicks fuzzed: %d | ScreenGuis: %d | results screen elements: %d", clicks, #screens, resultsRendered))
 		return problems
 	end)
 end

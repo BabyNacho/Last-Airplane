@@ -40,8 +40,9 @@ function UIKit.new(className: string, props: { [string]: any }?, children: { Ins
 		text.TextScaled = false
 		text.RichText = true
 	end
+	local paddingShorthand = type(props.Padding) == "number" or type(props.Padding) == "table"
 	for key, value in props :: any do
-		if not SPECIAL[key] then
+		if not SPECIAL[key] or (key == "Padding" and not paddingShorthand) then
 			(instance :: any)[key] = value
 		end
 	end
@@ -61,7 +62,7 @@ function UIKit.new(className: string, props: { [string]: any }?, children: { Ins
 			UIKit.Accent(stroke, "Color")
 		end
 	end
-	if props.Padding then
+	if paddingShorthand then
 		local padding = Instance.new("UIPadding")
 		local p = props.Padding
 		if type(p) == "number" then

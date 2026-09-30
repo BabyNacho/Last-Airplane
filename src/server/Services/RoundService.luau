@@ -231,6 +231,16 @@ end
 
 ---------------------------------------------------------------- watchdogs
 
+local function watchDeparture(ctx)
+	-- players who die leave the flight: they respawn at the terminal and can spectate
+	ctx:Give(Registry.ConditionService.Died:Connect(function(player, cause)
+		if ctx.Active and ctx:IsParticipant(player) and player.Parent then
+			player:SetAttribute("InRound", nil)
+			Registry.EffectsService:Notify("You didn't make it (" .. tostring(cause or "unknown") .. "). Watch the rest of the flight with SPECTATE.", "danger", player)
+		end
+	end))
+end
+
 local function startWatchdogs(ctx)
 	ctx:Every(1, function()
 		gameState:SetAttribute("Alive", ctx:AliveCount())
@@ -311,6 +321,7 @@ local function runRound()
 	callSystems("OnRoundStart", ctx)
 	boardPlayers(ctx)
 	startWatchdogs(ctx)
+	watchDeparture(ctx)
 	setPhase(Phase.Boarding, phaseDuration("Boarding", ctx.Rng))
 	Registry.ObjectiveService:Add({
 		Id = "FindSeat",

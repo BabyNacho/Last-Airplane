@@ -388,6 +388,7 @@ function LandingService:BeginEvacuation(ctx)
 							Registry.EquipmentService:StripTools(player)
 							-- slide down to the tarmac (lobby) - out of danger
 							Registry.MapService:Teleport(player, Registry.MapService:LobbySpawnCFrame())
+							player:SetAttribute("InRound", nil)
 							break
 						end
 					end

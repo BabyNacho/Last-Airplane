@@ -16,11 +16,14 @@ local EVENT_NAMES = {
 	CharacterRemoving = true, PlayerAdded = true, PlayerRemoving = true, OnServerEvent = true, OnClientEvent = true,
 	PromptGamePassPurchaseFinished = true, PromptProductPurchaseFinished = true, Event = true, MoveToFinished = true,
 	PromptShown = true, PromptHidden = true, PromptTriggered = true, AncestryChanged = true,
+	MouseEnter = true, MouseLeave = true, MouseButton1Down = true, MouseButton1Up = true, MouseButton1Click = true,
+	FocusLost = true, InputBegan = true, InputEnded = true, InputChanged = true,
 }
 
 local SHADOW_OK = {
 	OnServerInvoke = true, OnClientInvoke = true, ProcessReceipt = true, OnIncomingMessage = true, OnInvoke = true,
 	Occupant = true, SeatPart = true, Character = true, UserId = true, DisplayName = true,
+	LocalPlayer = true, ViewportSize = true,
 }
 
 function Membrane.new(scheduler, hooks)
@@ -302,6 +305,12 @@ function Membrane.new(scheduler, hooks)
 	overrides.FireClient = function(proxy, player, ...)
 		hooks.OnFireClient(M.unwrap(proxy).Name, player, ...)
 	end
+	overrides.FireServer = function(proxy, ...)
+		hooks.OnFireServer(proxy, ...)
+	end
+	overrides.InvokeServer = function(proxy, ...)
+		return hooks.OnInvokeServer(proxy, ...)
+	end
 	overrides.FireAllClients = function(proxy, ...)
 		hooks.OnFireClient(M.unwrap(proxy).Name, "all", ...)
 	end
@@ -392,6 +401,8 @@ function Membrane.new(scheduler, hooks)
 	overrides.Stop = function() end
 	overrides.Pause = function() end
 	overrides.Resume = function() end
+	overrides.Emit = function() end
+	overrides.Clear = function() end
 
 	---------------------------------------------------------------- proxy
 	local ProxyMeta = {}
@@ -402,7 +413,7 @@ function Membrane.new(scheduler, hooks)
 		if shadow ~= nil then
 			return wrapValue(shadow)
 		end
-		if SHADOW_OK[key] and (key == "Occupant" or key == "SeatPart" or key == "Character") then
+		if SHADOW_OK[key] and (key == "Occupant" or key == "SeatPart" or key == "Character" or key == "LocalPlayer") then
 			return nil
 		end
 		local override = overrides[key]
@@ -452,7 +463,7 @@ function Membrane.new(scheduler, hooks)
 			local ok = pcall(function()
 				inst[key] = raw
 			end)
-			if not ok or key == "Occupant" or key == "SeatPart" or key == "Character" or key == "UserId" then
+			if not ok or key == "Occupant" or key == "SeatPart" or key == "Character" or key == "UserId" or key == "LocalPlayer" or key == "ViewportSize" then
 				shadowSet(inst, key, raw)
 			end
 			fireChanged(inst, key, raw)

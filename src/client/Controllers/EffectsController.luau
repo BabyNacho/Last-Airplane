@@ -129,7 +129,9 @@ local function burst(position: Vector3, props: { [string]: any }, lifetime: numb
 	holder.Parent = Workspace
 	local emitter = Instance.new("ParticleEmitter")
 	for key, value in props do
-		(emitter :: any)[key] = value
+		if key ~= "EmitCount" then
+			(emitter :: any)[key] = value
+		end
 	end
 	emitter.Parent = holder
 	emitter:Emit(props.EmitCount or 30)
@@ -406,6 +408,12 @@ function EffectsController:Start()
 			end
 		elseif name == "Evacuated" then
 			self:Flash(Color3.fromRGB(255, 220, 120), 0.8, 0.5)
+		end
+	end)
+	-- fade through black when the server teleports players (boarding / back to the terminal)
+	ClientState.PhaseChanged:Connect(function(phase)
+		if phase == "Boarding" or phase == "Results" then
+			self:Flash(Color3.new(0, 0, 0), 1.4, 1)
 		end
 	end)
 	watchWindows()

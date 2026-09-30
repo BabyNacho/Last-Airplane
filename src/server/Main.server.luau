@@ -42,6 +42,7 @@ local ORDER = {
 	"MonetizationService",
 	"EmoteService",
 	"LobbyService",
+	"DevService", -- Studio-only chat commands
 	-- round loop last
 	"RoundService",
 }

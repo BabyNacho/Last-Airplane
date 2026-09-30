@@ -42,6 +42,23 @@ function World.new(options: { StoreFailures: number?, Seed: number? }?)
 			for _, handler in self.ClientHandlers do
 				handler(remote, player, ...)
 			end
+			if self.ClientPlayer and (player == "all" or player == self.ClientPlayer) then
+				local remotes = self.Game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+				local remoteProxy = remotes and remotes:FindFirstChild(remote)
+				if remoteProxy then
+					M.signalFor(remoteProxy, "OnClientEvent"):Fire(...)
+				end
+			end
+		end,
+		OnFireServer = function(remoteProxy, ...)
+			M.signalFor(remoteProxy, "OnServerEvent"):Fire(self.ClientPlayer, ...)
+		end,
+		OnInvokeServer = function(remoteProxy, ...)
+			local callback = M.getShadow(remoteProxy, "OnServerInvoke")
+			if not callback then
+				error("InvokeServer with no OnServerInvoke on " .. tostring(remoteProxy))
+			end
+			return callback(self.ClientPlayer, ...)
 		end,
 		OnBindToClose = function(fn)
 			table.insert(self.BindToClose, fn)
@@ -120,7 +137,16 @@ function World.new(options: { StoreFailures: number?, Seed: number? }?)
 			return tween
 		end,
 	}
+	local renderBindings = {}
+	self.RenderBindings = renderBindings
 	services.RunService = {
+		RenderStepped = M.Signal.new("RenderStepped"),
+		BindToRenderStep = function(_, name, _priority, fn)
+			renderBindings[name] = fn
+		end,
+		UnbindFromRenderStep = function(_, name)
+			renderBindings[name] = nil
+		end,
 		IsServer = function()
 			return true
 		end,
@@ -201,6 +227,50 @@ function World.new(options: { StoreFailures: number?, Seed: number? }?)
 		end,
 	})
 	self.Marketplace = marketplace
+	marketplace.PromptProductPurchase = function(_, _player, id)
+		table.insert(self.Prints, "PromptProductPurchase " .. tostring(id))
+	end
+	marketplace.PromptGamePassPurchase = function(_, _player, id)
+		table.insert(self.Prints, "PromptGamePassPurchase " .. tostring(id))
+	end
+
+	-- client-only services
+	services.UserInputService = {
+		TouchEnabled = false,
+		KeyboardEnabled = true,
+		GamepadEnabled = false,
+		MouseEnabled = true,
+		InputBegan = M.Signal.new("InputBegan"),
+		InputEnded = M.Signal.new("InputEnded"),
+		InputChanged = M.Signal.new("InputChanged"),
+		GetLastInputType = function()
+			return roblox.Enum.UserInputType.Keyboard
+		end,
+	}
+	services.ContextActionService = {
+		Bound = {},
+		BindAction = function(t, name, fn)
+			t.Bound[name] = fn
+		end,
+		UnbindAction = function(t, name)
+			t.Bound[name] = nil
+		end,
+	}
+	services.GuiService = { SelectedObject = nil }
+	services.StarterGui = {
+		SetCore = function() end,
+		SetCoreGuiEnabled = function() end,
+	}
+	services.ProximityPromptService = {
+		PromptShown = M.Signal.new("PromptShown"),
+		PromptHidden = M.Signal.new("PromptHidden"),
+		PromptTriggered = M.Signal.new("PromptTriggered"),
+		PromptButtonHoldBegan = M.Signal.new("PromptButtonHoldBegan"),
+		PromptButtonHoldEnded = M.Signal.new("PromptButtonHoldEnded"),
+	}
+	local textChat = M.wrap(rawGame:GetService("TextChatService"))
+	textChat.ChatVersion = roblox.Enum.ChatVersion.TextChatService
+	services.TextChatService = textChat
 
 	---------------------------------------------------------------- environment
 	local vtask = lib
@@ -421,6 +491,51 @@ function World.new(options: { StoreFailures: number?, Seed: number? }?)
 		local remote = remotes:FindFirstChild(functionName)
 		local callback = M.getShadow(remote, "OnServerInvoke")
 		return callback(player, ...)
+	end
+
+	-- Runs the client (StarterPlayerScripts) for one player in the same world.
+	function self:AttachClient(playerProxy, device: { Touch: boolean?, Viewport: Vector2? }?)
+		self.ClientPlayer = playerProxy
+		if device and device.Touch then
+			services.UserInputService.TouchEnabled = true
+			services.UserInputService.KeyboardEnabled = false
+			services.UserInputService.MouseEnabled = false
+		end
+		local playersService = self.Game:GetService("Players")
+		M.shadow(playersService, "LocalPlayer", playerProxy)
+		M.Instance("PlayerGui", playerProxy)
+		local playerScripts = M.Instance("Folder", playerProxy)
+		playerScripts.Name = "PlayerScripts"
+		local playerModule = M.Instance("ModuleScript", playerScripts)
+		playerModule.Name = "PlayerModule"
+		M.unwrap(playerModule).Source = "return { GetControls = function() return { Enable = function() end, Disable = function() end } end }"
+		local workspaceProxy = self.Game:GetService("Workspace")
+		local camera = M.Instance("Camera", workspaceProxy)
+		M.shadow(camera, "ViewportSize", (device and device.Viewport) or roblox.Vector2.new(1280, 720))
+		workspaceProxy.CurrentCamera = camera
+		local clientFolder = rawGame:GetService("StarterPlayer"):FindFirstChild("StarterPlayerScripts"):FindFirstChild("Client")
+		local main = clientFolder:FindFirstChild("Main")
+		local fn = luau.load(main.Source, { debugName = "ClientMain", environment = env(M.wrap(main)) })
+		lib.spawn(fn)
+		-- frame loop
+		lib.spawn(function()
+			local run = services.RunService
+			while true do
+				lib.wait(1 / 15)
+				local character = playerProxy.Character
+				local root = character and character:FindFirstChild("HumanoidRootPart")
+				if root then
+					camera.CFrame = root.CFrame * roblox.CFrame.new(0, 2, 8)
+					camera.Focus = root.CFrame
+				end
+				run.Heartbeat:Fire(1 / 15)
+				run.RenderStepped:Fire(1 / 15)
+				for _, binding in renderBindings do
+					binding(1 / 15)
+				end
+			end
+		end)
+		return clientFolder
 	end
 
 	function self:Advance(seconds: number)

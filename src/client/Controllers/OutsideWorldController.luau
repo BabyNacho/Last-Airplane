@@ -121,7 +121,13 @@ local function buildGround()
 	end
 end
 
+local runwayVisible = true
+
 local function positionRunway(y: number, xOffset: number, visible: boolean)
+	if not visible and not runwayVisible then
+		return -- already hidden; skip touching ~90 parts every frame
+	end
+	runwayVisible = visible
 	runway.Transparency = if visible then 0 else 1
 	local base = O + Vector3.new(xOffset, y + 1.2, 0)
 	runway.Position = base
