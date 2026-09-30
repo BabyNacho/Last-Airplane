@@ -1,0 +1,51 @@
+{
+  "name": "LastFlight",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": { "$path": "src/shared" }
+    },
+    "ServerScriptService": {
+      "Server": { "$path": "src/server" }
+    },
+    "StarterPlayer": {
+      "$properties": {
+        "CameraMaxZoomDistance": 24,
+        "CharacterWalkSpeed": 16,
+        "CharacterJumpPower": 40
+      },
+      "StarterPlayerScripts": {
+        "Client": { "$path": "src/client" }
+      },
+      "StarterCharacterScripts": {
+        "$path": "src/character"
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": false,
+        "Gravity": 196.2
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Ambient": [0.35, 0.35, 0.4],
+        "Brightness": 2,
+        "ClockTime": 14,
+        "GlobalShadows": true
+      }
+    },
+    "Players": {
+      "$properties": {
+        "CharacterAutoLoads": true,
+        "RespawnTime": 4,
+        "MaxPlayers": 20
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}

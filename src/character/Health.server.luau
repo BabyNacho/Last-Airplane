@@ -1,0 +1,2 @@
+-- Replaces Roblox's default health regeneration script.
+-- Player condition (health) is fully controlled by ConditionService on the server.
