@@ -57,6 +57,9 @@ GameConfig.Condition = {
 	InjuredWalkSpeed = 13.5,
 	NormalWalkSpeed = 16,
 	DownedDamageMultiplier = 1.5, -- extra damage while unconscious shortens the bleed-out
+	-- When nobody else aboard can help, an unconscious player recovers on their own once per round.
+	SoloRecoveryDelay = 9,
+	SoloRecoveryHealth = 25,
 }
 
 GameConfig.Oxygen = {
@@ -88,8 +91,8 @@ GameConfig.Turbulence = {
 	-- per stage: seconds between jolts, base damage for unsecured players, stumble chance
 	Stages = {
 		{ Name = "Light", Interval = { 7, 11 }, Damage = 0, Stumble = 0.15 },
-		{ Name = "Moderate", Interval = { 5, 8 }, Damage = 8, Stumble = 0.45 },
-		{ Name = "Severe", Interval = { 3.5, 6 }, Damage = 16, Stumble = 0.8 },
+		{ Name = "Moderate", Interval = { 5, 8 }, Damage = 6, Stumble = 0.45 },
+		{ Name = "Severe", Interval = { 3.5, 6 }, Damage = 12, Stumble = 0.7 },
 	},
 	SeatedProtection = 1.0, -- fraction of damage prevented while buckled in
 }

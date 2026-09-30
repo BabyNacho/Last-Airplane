@@ -79,6 +79,11 @@ function FlightService:Reset()
 	end
 end
 
+function FlightService:OnRoundStart(ctx)
+	self:Reset()
+	state:SetAttribute("Night", ctx.Modifier == "NightFlight")
+end
+
 function FlightService:Get(key: string): any
 	return state:GetAttribute(key)
 end

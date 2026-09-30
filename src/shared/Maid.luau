@@ -13,30 +13,30 @@ function Maid.new(): Maid
 	return setmetatable({ _tasks = {} }, Maid)
 end
 
-function Maid.Give(self: Maid, task: any): any
-	table.insert(self._tasks, task)
-	return task
+function Maid.Give(self: Maid, item: any): any
+	table.insert(self._tasks, item)
+	return item
 end
 
-local function cleanup(task: any)
-	local kind = typeof(task)
+local function cleanup(item: any)
+	local kind = typeof(item)
 	if kind == "RBXScriptConnection" then
-		task:Disconnect()
+		item:Disconnect()
 	elseif kind == "Instance" then
-		task:Destroy()
+		item:Destroy()
 	elseif kind == "thread" then
-		if coroutine.status(task) ~= "dead" then
-			pcall(task.cancel, task)
+		if coroutine.status(item) ~= "dead" then
+			pcall(task.cancel, item)
 		end
 	elseif kind == "function" then
-		task()
+		item()
 	elseif kind == "table" then
-		if type(task.Destroy) == "function" then
-			task:Destroy()
-		elseif type(task.Disconnect) == "function" then
-			task:Disconnect()
-		elseif type(task.Clean) == "function" then
-			task:Clean()
+		if type(item.Destroy) == "function" then
+			item:Destroy()
+		elseif type(item.Disconnect) == "function" then
+			item:Disconnect()
+		elseif type(item.Clean) == "function" then
+			item:Clean()
 		end
 	end
 end

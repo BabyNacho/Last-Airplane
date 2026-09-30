@@ -17,6 +17,7 @@ local RescueService = {}
 local CFG = GameConfig.Condition
 
 local revivePrompts: { [Player]: any } = {}
+local soloRecovered: { [Player]: boolean } = {}
 local aidPrompts: { [Player]: any } = {}
 local lastAid: { [Player]: number } = {}
 
@@ -121,14 +122,39 @@ local function addAid(ctx, target: Player)
 	})
 end
 
+-- If no conscious teammate is aboard, a downed player pulls themselves up once per round,
+-- so solo players (or the last player standing) aren't doomed by a single knockdown.
+local function scheduleSoloRecovery(ctx, target: Player)
+	if soloRecovered[target] then
+		return
+	end
+	ctx:Delay(CFG.SoloRecoveryDelay, function()
+		if Registry.ConditionService:GetState(target) ~= Enums.Condition.Unconscious or soloRecovered[target] then
+			return
+		end
+		for _, other in ctx:AlivePlayers() do
+			if other ~= target and Registry.ConditionService:IsConscious(other) then
+				return -- someone can still help
+			end
+		end
+		soloRecovered[target] = true
+		if Registry.ConditionService:Revive(target, CFG.SoloRecoveryHealth) then
+			clear(revivePrompts, target)
+			Registry.EffectsService:Notify("Nobody's coming... you drag yourself back up. (once per flight)", "warn", target)
+		end
+	end)
+end
+
 function RescueService:OnRoundStart(ctx)
 	table.clear(lastAid)
+	table.clear(soloRecovered)
 	ctx:Give(Registry.ConditionService.StateChanged:Connect(function(player, newState)
 		if not ctx.Active or not ctx:IsParticipant(player) then
 			return
 		end
 		if newState == Enums.Condition.Unconscious then
 			addRevive(ctx, player)
+			scheduleSoloRecovery(ctx, player)
 		elseif newState == Enums.Condition.Injured or newState == Enums.Condition.Critical then
 			clear(revivePrompts, player)
 			addAid(ctx, player)
@@ -153,6 +179,7 @@ function RescueService:Start()
 		clear(revivePrompts, player)
 		clear(aidPrompts, player)
 		lastAid[player] = nil
+		soloRecovered[player] = nil
 	end)
 end
 

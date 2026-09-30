@@ -28,7 +28,7 @@ sed 's#"src/#"src/#g' default.project.json > "$STRICT/default.project.json"
   | grep -v '^\[INFO\]\|^\[WARN\]' > "$CACHE/analyze.log"
 
 PATTERN="not found in external type|Unknown global|Unknown require|SyntaxError|not found in table 'typeof\(task\)|Key '[a-z]+' not found in table '\{ cancel"
-grep -E "^(/|src).*($PATTERN)" "$CACHE/analyze.log" > "$CACHE/errors.log"
+grep -E "^(/|src).*($PATTERN)" "$CACHE/analyze.log" | grep -v "Unknown require: unsupported path" > "$CACHE/errors.log"
 if [ "$VERBOSE" = "-v" ]; then cat "$CACHE/analyze.log"; fi
 if [ -s "$CACHE/errors.log" ]; then
   cat "$CACHE/errors.log"

@@ -206,8 +206,8 @@ function RoundContext:Wait(seconds: number): boolean
 	return self.Active
 end
 
-function RoundContext:Give(task: any)
-	return self.Maid:Give(task)
+function RoundContext:Give(item: any)
+	return self.Maid:Give(item)
 end
 
 function RoundContext:End()

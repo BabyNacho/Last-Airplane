@@ -38,7 +38,7 @@ UIConfig.Fonts = {
 
 -- Reference resolution for UIScale; everything scales from this.
 UIConfig.ReferenceSize = Vector2.new(1280, 720)
-UIConfig.MinScale = 0.62
+UIConfig.MinScale = 0.5
 UIConfig.MaxScale = 1.35
 UIConfig.MinTouchTarget = 44 -- pixels, applied after scaling
 
