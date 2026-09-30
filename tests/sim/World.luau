@@ -12,7 +12,7 @@ local Scheduler = require("./Scheduler")
 
 local World = {}
 
-function World.new(options: { StoreFailures: number?, Seed: number? }?)
+function World.new(options: { StoreFailures: number?, Seed: number?, PlacePath: string? }?)
 	options = options or {}
 	local self = {}
 	self.Errors = {} :: { string }
@@ -30,7 +30,7 @@ function World.new(options: { StoreFailures: number?, Seed: number? }?)
 	end)
 	self.Scheduler = scheduler
 
-	local rawGame = roblox.deserializePlace(fs.readFile("build/LastFlight.rbxl"))
+	local rawGame = roblox.deserializePlace(fs.readFile(options.PlacePath or "build/LastFlight.rbxl"))
 	local playersByCharacter: { [number]: any } = {}
 
 	local M

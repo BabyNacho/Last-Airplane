@@ -417,6 +417,45 @@ for _, run in CLIENT_RUNS do
 	end)
 end
 
+scenario("Baked place (LastFlight.rbxl): world replaced, not duplicated, round plays", function(world)
+	local problems = {}
+	local workspaceProxy = world.Game:GetService("Workspace")
+	local function worlds()
+		local n = 0
+		for _, child in workspaceProxy:GetChildren() do
+			if child.Name == "World" then
+				n += 1
+			end
+		end
+		return n
+	end
+	if worlds() ~= 1 then
+		table.insert(problems, "baked place should contain exactly one World before boot, found " .. worlds())
+	end
+	world:Boot()
+	world:Advance(2)
+	if worlds() ~= 1 then
+		table.insert(problems, "expected exactly one World after boot, found " .. worlds())
+	end
+	local remotes = world.Game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+	local seen = {}
+	for _, remote in remotes:GetChildren() do
+		if seen[remote.Name] then
+			table.insert(problems, "duplicate remote " .. remote.Name)
+		end
+		seen[remote.Name] = true
+	end
+	config(world, "GameConfig").StudioForceDisaster = "EngineFailure"
+	local bots = Bots.attach(world, { Seed = 3 })
+	local player = world:AddPlayer("BakedTester")
+	bots.Add(player)
+	local _, finished = runRounds(world, 1, 800)
+	if finished < 1 or not resultsFor(world, player) then
+		table.insert(problems, "round did not complete on the baked place")
+	end
+	return problems
+end, { PlacePath = "LastFlight.rbxl" })
+
 scenario("Player leaves mid-round (Crisis)", function(world)
 	local problems = {}
 	world:Boot()

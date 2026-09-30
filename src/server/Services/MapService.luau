@@ -36,7 +36,13 @@ local STATUS_COLORS = {
 }
 
 function MapService:Init()
-	local world = Workspace:FindFirstChild("World") or Instance.new("Folder")
+	-- The place file ships with a pre-built copy of the world so it is visible in Studio's
+	-- Edit mode. Replace it with a freshly built one so the point registry references live parts.
+	local baked = Workspace:FindFirstChild("World")
+	if baked then
+		baked:Destroy()
+	end
+	local world = Instance.new("Folder")
 	world.Name = "World"
 	world.Parent = Workspace
 

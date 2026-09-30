@@ -14,15 +14,29 @@ There are no binary place files to maintain.
 
 ## Quick start
 
-1. Install [Rojo](https://rojo.space) 7.4+ (for example with `aftman`/`rokit`, or download a release).
-2. Build the place file:
-   ```bash
-   rojo build default.project.json -o LastFlight.rbxl
-   ```
-   Open `LastFlight.rbxl` in Roblox Studio. Alternatively, run `rojo serve` and connect with the
-   Rojo Studio plugin to live-sync while editing.
-3. Press **Play** (or **Start** with 2–4 players in the Test tab for multiplayer). The lobby and the
-   aircraft are built procedurally when the server starts; a round begins after the 30s lobby countdown.
+**Easiest:** download the ready-made place from GitHub Actions: repository → **Actions** →
+**Build Roblox place** → latest run → **Artifacts** → `LastFlight-Roblox-Place`. Unzip it and open
+`LastFlight.rbxl` in Roblox Studio.
+
+**Build it yourself:** install [Rojo](https://rojo.space) 7.4+ and [Lune](https://github.com/lune-org/lune), then run:
+
+```bash
+tools/build-place.sh        # -> LastFlight.rbxl (complete place, verified)
+```
+
+The build has three steps:
+
+1. `rojo build` packages every script (the output has no world yet).
+2. `tools/bake-place.luau` runs the game's own map builders and `Net.Setup`, and saves the airplane,
+   lobby, spawn point and RemoteEvents into the place so you can see them in Studio's Edit mode.
+3. `tools/verify-place.luau` fails the build unless that content is actually inside the file.
+
+A plain `rojo build` on its own gives a place with scripts but an empty Workspace.
+
+When you press **Play**, the server replaces the baked world with a freshly built identical copy.
+The HUD, shop and other screens are built by the LocalScripts at play time, so StarterGui is empty
+in Edit mode. That's expected. A round begins after the 30s lobby countdown; use **Start** with
+2–4 players in the Test tab to try multiplayer.
 
 ### Manual steps Roblox requires
 
@@ -86,7 +100,7 @@ A round lasts roughly 5–8 minutes. Every timing lives in `src/shared/Config/Ga
 
 - **Map:** an airport terminal lobby (departure board, gate, shop / wardrobe / records kiosks,
   leaderboard, VIP lounge, parked airliner) and a full airliner interior: cockpit, galleys,
-  first class, economy with 112 seats, overwing exits, lavatories, service/avionics bay, crew rest,
+  first class, economy (106 passenger seats), overwing exits, lavatories, service/avionics bay, crew rest,
   wings and engines outside the windows. Everything is built procedurally and modular per section.
 - **Outside world:** clouds stream past, the ground rises during the descent, a runway slides
   underneath at touchdown; storms, fog, birds and runway lights are rendered client-side.
