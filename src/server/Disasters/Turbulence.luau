@@ -123,13 +123,10 @@ function Turbulence:Crisis()
 		Object = "YAW DAMPER",
 		Hold = 3.5,
 		Panel = "Avionics",
-		OnDone = function(player)
+		OnDone = function()
 			flight:SetModifier("YawDamper", nil)
 			self.S.TurbulenceSystem:SetStage(self.Ctx, self.S.TurbulenceSystem:GetStage(), { DamageScale = 0.5 })
 			self:Notify("Yaw damper reset - the aircraft steadies.", "good")
-			if self.S.TurbulenceSystem:GetStage() >= 3 then
-				self.S.ConditionService:MarkHazard(player, 1)
-			end
 		end,
 	})
 	self:Delay(12, function()

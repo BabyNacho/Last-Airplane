@@ -189,6 +189,7 @@ local function step(dt: number)
 		if breathing then
 			Registry.ConditionService:ChangeOxygen(player, CFG.RefillPerSecond * dt)
 		else
+			Registry.ConditionService:MarkHazard(player, 1.5)
 			Registry.ConditionService:ChangeOxygen(player, -CFG.DrainPerSecond * drainScale * dt)
 			if Registry.ConditionService:GetOxygen(player) <= 0 then
 				Registry.ConditionService:Damage(player, CFG.HypoxiaDamagePerSecond * dt, "Passed out from hypoxia", false)

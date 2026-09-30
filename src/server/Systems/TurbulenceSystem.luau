@@ -43,6 +43,10 @@ local function jolt(ctx)
 	end
 	for _, player in ctx:AlivePlayers() do
 		if Registry.ConditionService:IsConscious(player) and not Registry.MapService:IsSeated(player) then
+			if stage >= 2 then
+				-- moving around unbuckled in rough air counts as acting inside a hazard (Brave)
+				Registry.ConditionService:MarkHazard(player, def.Interval[2] + 1)
+			end
 			if ctx.Rng:NextNumber() < def.Stumble then
 				local direction = Vector3.new(ctx.Rng:NextNumber(-1, 1), 0, ctx.Rng:NextNumber(-1, 1))
 				Net.Event("Stumble"):FireClient(player, { Strength = stage, Direction = direction })

@@ -165,7 +165,8 @@ use equipment, trigger prompts, fight fires, vote, fly the approach and evacuate
 
 - every disaster played solo and with a squad of 4
 - 6-player and 8–14 player stress runs over several rounds with cooperative, selfish and idle bots
-- a player leaving mid-round, everyone dying, a disaster module crashing (safe fallback)
+- a player leaving mid-round, a player dying (respawns at the terminal, can spectate), everyone
+  dying, a late joiner waiting for the next flight, a disaster module crashing (safe fallback)
 - a DataStore outage (temporary profile, never written, merged on recovery)
 - idempotent receipt processing and shop validation, including exploit-shaped remote payloads
 - the full client UI on desktop, tablet and phones (touch input, small viewports) while a random

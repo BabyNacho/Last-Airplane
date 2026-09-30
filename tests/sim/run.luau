@@ -447,6 +447,73 @@ scenario("Player leaves mid-round (Crisis)", function(world)
 	return problems
 end)
 
+scenario("One player dies: leaves the flight UI, respawns at the terminal, round continues", function(world)
+	local problems = {}
+	world:Boot()
+	world:Advance(1)
+	local bots = Bots.attach(world, { Seed = 31 })
+	local victim = world:AddPlayer("Victim")
+	local survivor = world:AddPlayer("Survivor")
+	bots.Add(survivor)
+	local killedAt = nil
+	local checked = false
+	local _, finished = runRounds(world, 1, 800, function(phase)
+		if phase == "Disaster" and not killedAt then
+			killedAt = world.Scheduler.Now
+			registry(world).ConditionService:Kill(victim, "Test")
+		elseif phase == "Crisis" and killedAt and not checked then
+			checked = true
+			if victim:GetAttribute("InRound") then
+				table.insert(problems, "dead player still flagged InRound")
+			end
+			local character = victim.Character
+			local root = character and character:FindFirstChild("HumanoidRootPart")
+			if not root or root.Position.Z > 1000 then
+				table.insert(problems, "dead player did not respawn in the terminal")
+			end
+		end
+	end)
+	if finished < 1 then
+		table.insert(problems, "round did not finish")
+	end
+	local result = resultsFor(world, victim)
+	if not result or not result.Personal or result.Personal.Survived then
+		table.insert(problems, "victim should get a results screen marked as not survived")
+	end
+	return problems
+end)
+
+scenario("Late joiner waits in the terminal and boards the next flight", function(world)
+	local problems = {}
+	world:Boot()
+	world:Advance(1)
+	local bots = Bots.attach(world, { Seed = 77 })
+	bots.Add(world:AddPlayer("Early"))
+	local late = nil
+	local boardedLate = false
+	local _, finished = runRounds(world, 2, 1400, function(phase)
+		if phase == "Crisis" and not late then
+			late = world:AddPlayer("Late")
+			bots.Add(late)
+		elseif phase == "Boarding" and late then
+			world.M.Library.delay(2, function()
+				if late:GetAttribute("InRound") then
+					boardedLate = true
+				end
+			end)
+		elseif phase == "Disaster" and late and not boardedLate and late:GetAttribute("InRound") then
+			table.insert(problems, "late joiner was pulled into a flight already in progress")
+		end
+	end)
+	if finished < 2 then
+		table.insert(problems, "only " .. finished .. " rounds finished")
+	end
+	if not boardedLate then
+		table.insert(problems, "late joiner never boarded the next flight")
+	end
+	return problems
+end)
+
 scenario("Everyone dies mid-round -> Complete Disaster, loop continues", function(world)
 	local problems = {}
 	world:Boot()
