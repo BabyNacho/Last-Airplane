@@ -390,8 +390,10 @@ for _, run in CLIENT_RUNS do
 					pps.PromptButtonHoldEnded:Fire(prompt)
 					pps.PromptHidden:Fire(prompt)
 					local touchPrompt = prompts[rand(#prompts)]
-					pps.PromptShown:Fire(touchPrompt, roblox.Enum.ProximityPromptInputType.Touch)
-					pps.PromptHidden:Fire(touchPrompt)
+					if touchPrompt.Parent then -- the list is 0.2s old; the engine never shows a destroyed prompt
+						pps.PromptShown:Fire(touchPrompt, roblox.Enum.ProximityPromptInputType.Touch)
+						pps.PromptHidden:Fire(touchPrompt)
+					end
 				end
 			end
 		end)
@@ -455,6 +457,289 @@ scenario("Baked place (LastFlight.rbxl): world replaced, not duplicated, round p
 	end
 	return problems
 end, { PlacePath = "LastFlight.rbxl" })
+
+---------------------------------------------------------------- camera (cases A-G)
+
+local function advanceUntil(world, predicate: () -> boolean, timeout: number): boolean
+	local limit = world.Scheduler.Now + timeout
+	while world.Scheduler.Now < limit do
+		if predicate() then
+			return true
+		end
+		world:Advance(0.25)
+	end
+	return predicate()
+end
+
+local function cameraKit(world, me)
+	local clientFolder = world.Game:GetService("StarterPlayer"):FindFirstChild("StarterPlayerScripts"):FindFirstChild("Client")
+	local kit = {}
+	kit.Cam = world.Require(clientFolder:FindFirstChild("Controllers"):FindFirstChild("CameraController"))
+	kit.ClientState = world.Require(clientFolder:FindFirstChild("ClientState"))
+	kit.Camera = world.Game:GetService("Workspace").CurrentCamera
+	-- deterministic aircraft attitude as seen by the client
+	local attitude = { Roll = 0, Pitch = 0 }
+	kit.Attitude = attitude
+	local realFlight = kit.ClientState.Flight
+	kit.ClientState.Flight = function(key)
+		if key == "Roll" or key == "Pitch" then
+			return attitude[key]
+		elseif key == "OnGround" then
+			return false
+		elseif key == "Turbulence" then
+			return 0
+		end
+		return realFlight(key)
+	end
+	function kit.Pitch(): number
+		return math.deg(math.asin(math.clamp(kit.Camera.CFrame.LookVector.Y, -1, 1)))
+	end
+	function kit.Roll(): number
+		return math.deg(math.asin(math.clamp(kit.Camera.CFrame.RightVector.Y, -1, 1)))
+	end
+	function kit.HeadingDot(): number
+		local root = me.Character and me.Character:FindFirstChild("HumanoidRootPart")
+		local a = kit.Camera.CFrame.LookVector * roblox.Vector3.new(1, 0, 1)
+		local b = root.CFrame.LookVector * roblox.Vector3.new(1, 0, 1)
+		return a.Unit:Dot(b.Unit)
+	end
+	-- points the camera somewhere awkward, like a player who looked down from above mid-flight
+	function kit.Mess(pitchDegrees: number, yawDegrees: number)
+		local cf = kit.Camera.CFrame
+		local focus = kit.Camera.Focus.Position
+		local root = me.Character:FindFirstChild("HumanoidRootPart")
+		local heading = (root.CFrame.LookVector * roblox.Vector3.new(1, 0, 1)).Unit
+		local yawed = roblox.CFrame.Angles(0, math.rad(yawDegrees), 0) * heading
+		local look = yawed * math.cos(math.rad(pitchDegrees)) + roblox.Vector3.new(0, math.sin(math.rad(pitchDegrees)), 0)
+		local right = look:Cross(roblox.Vector3.new(0, 1, 0)).Unit
+		kit.Camera.CFrame = roblox.CFrame.fromMatrix(focus - look * (cf.Position - focus).Magnitude, right, right:Cross(look)) * roblox.CFrame.Angles(0, 0, math.rad(20))
+	end
+	-- samples the camera after every rendered frame
+	function kit.Record(): { number }
+		local samples = {}
+		world.Game:GetService("RunService"):BindToRenderStep("SimCameraProbe", 10000, function()
+			table.insert(samples, kit.Pitch())
+		end)
+		return samples
+	end
+	function kit.StopRecord()
+		world.Game:GetService("RunService"):UnbindFromRenderStep("SimCameraProbe")
+	end
+	-- the view Roblox's camera should settle into: upright, eye level, facing the character's heading
+	function kit.ExpectNatural(problems, label: string)
+		local goal = config(world, "GameConfig").Camera.RecenterPitch
+		if kit.Cam:IsRecentering() then
+			table.insert(problems, label .. ": still recentering")
+		end
+		if kit.Cam:GetTiltWeight() ~= 0 then
+			table.insert(problems, label .. ": flight tilt still applied (" .. kit.Cam:GetTiltWeight() .. ")")
+		end
+		if math.abs(kit.Pitch() - goal) > 2 then
+			table.insert(problems, string.format("%s: camera pitch %.1f, expected about %d (eye level)", label, kit.Pitch(), goal))
+		end
+		if math.abs(kit.Roll()) > 0.5 then
+			table.insert(problems, string.format("%s: camera still rolled %.1f degrees", label, kit.Roll()))
+		end
+		if kit.HeadingDot() < 0.98 then
+			table.insert(problems, string.format("%s: camera not behind the character (heading dot %.3f)", label, kit.HeadingDot()))
+		end
+	end
+	function kit.ExpectSmooth(problems, label: string, samples: { number })
+		local biggest = 0
+		for i = 2, #samples do
+			biggest = math.max(biggest, math.abs(samples[i] - samples[i - 1]))
+		end
+		-- 15 simulated fps: a ~60 degree swing over the recenter time moves < 20 degrees per frame
+		if #samples < 5 or biggest > 20 then
+			table.insert(problems, string.format("%s: recenter not smooth (%d frames, biggest step %.1f deg)", label, #samples, biggest))
+		end
+	end
+	return kit
+end
+
+local function boardAndTakeControl(world, me, kit, problems)
+	advanceUntil(world, function()
+		return gameState(world):GetAttribute("Phase") == "Flight" and me:GetAttribute("InRound") == true
+	end, 300)
+	local reg = registry(world)
+	local humanoid = me.Character:FindFirstChildOfClass("Humanoid")
+	humanoid.Sit = false
+	local seat = reg.MapService.Points.PilotSeat
+	if seat.Occupant then
+		seat.Occupant.Sit = false -- the NPC captain gives up the seat
+	end
+	world:Advance(0.1)
+	seat:Sit(humanoid)
+	reg.CockpitSystem:EnableManual(true)
+	if not advanceUntil(world, function()
+		return kit.Cam:IsPiloting()
+	end, 3) then
+		table.insert(problems, "A: taking the pilot seat with manual flight enabled did not start the flight camera")
+	end
+end
+
+scenario("Camera: flight camera, release recenter, RECENTER button, death, respawn (A-F)", function(world)
+	local problems = {}
+	world:Boot()
+	world:Advance(1)
+	config(world, "GameConfig").StudioForceDisaster = "NavigationFailure"
+	local bots = Bots.attach(world, { Seed = 77 })
+	local me = world:AddPlayer("Pilot")
+	local buddy = world:AddPlayer("Buddy")
+	bots.Add(buddy)
+	world:AttachClient(me, { Touch = true, Viewport = roblox.Vector2.new(812, 375) })
+	world:Advance(1)
+	local kit = cameraKit(world, me)
+	local bindings = {}
+	for name in world.RenderBindings do
+		table.insert(bindings, name)
+	end
+	table.sort(bindings)
+	if table.concat(bindings, ",") ~= "LF_CameraPost,LF_CameraPre" then
+		table.insert(problems, "expected exactly the CameraController render steps, got: " .. table.concat(bindings, ","))
+	end
+
+	-- A: enter control -> flight camera (tilt) blends in
+	boardAndTakeControl(world, me, kit, problems)
+	kit.Attitude.Roll, kit.Attitude.Pitch = 10, 4
+	world:Advance(1.5)
+	if kit.Cam:GetTiltWeight() ~= 1 then
+		table.insert(problems, "A: flight tilt did not blend in (" .. kit.Cam:GetTiltWeight() .. ")")
+	end
+	if math.abs(kit.Roll()) < 4 then
+		table.insert(problems, string.format("A: flight camera shows no roll (%.1f)", kit.Roll()))
+	end
+
+	-- B: the camera follows the attitude, and a held attitude never accumulates into the view
+	local pitchBefore = kit.Pitch()
+	world:Advance(4)
+	if math.abs(kit.Pitch() - pitchBefore) > 1.5 then
+		table.insert(problems, string.format("B: camera pitch drifted from %.1f to %.1f while the attitude was held", pitchBefore, kit.Pitch()))
+	end
+	local rollRight = kit.Roll()
+	kit.Attitude.Roll = -10
+	world:Advance(1.5)
+	if math.sign(kit.Roll()) == math.sign(rollRight) or math.abs(kit.Roll()) < 4 then
+		table.insert(problems, string.format("B: camera roll did not follow the aircraft (%.1f -> %.1f)", rollRight, kit.Roll()))
+	end
+	print(string.format("      flight: roll %.1f -> %.1f, pitch held %.1f -> %.1f", rollRight, kit.Roll(), pitchBefore, kit.Pitch()))
+
+	-- C: release control while looking down from above -> smooth return to eye level
+	kit.Mess(-70, 120)
+	local samples = kit.Record()
+	registry(world).CockpitSystem:EnableManual(false)
+	world:Advance(2)
+	kit.StopRecord()
+	if kit.Cam:IsPiloting() then
+		table.insert(problems, "C: flight camera still active after control ended")
+	end
+	kit.ExpectNatural(problems, "C")
+	kit.ExpectSmooth(problems, "C", samples)
+	world:Advance(2)
+	kit.ExpectNatural(problems, "C (2s after, Roblox camera in charge)")
+	print(string.format("      release: %d frames, pitch %.1f, roll %.1f", #samples, kit.Pitch(), kit.Roll()))
+
+	-- D: RECENTER button, not piloting
+	local button = me:FindFirstChildOfClass("PlayerGui"):FindFirstChild("SpectateUI"):FindFirstChild("Root"):FindFirstChild("Recenter")
+	if not button or not button.Visible then
+		table.insert(problems, "D: RECENTER button missing or hidden while playing")
+	end
+	kit.Mess(65, -150)
+	samples = kit.Record()
+	world.M.signalFor(button, "Activated"):Fire()
+	world:Advance(2)
+	kit.StopRecord()
+	kit.ExpectNatural(problems, "D")
+	kit.ExpectSmooth(problems, "D", samples)
+	-- D2: RECENTER while flying keeps the flight camera and does not touch the controls
+	reg = registry(world)
+	reg.CockpitSystem:EnableManual(true)
+	advanceUntil(world, function()
+		return kit.Cam:IsPiloting()
+	end, 3)
+	world.M.signalFor(button, "Activated"):Fire()
+	world:Advance(1.5)
+	if not kit.Cam:IsPiloting() or kit.Cam:GetTiltWeight() ~= 1 or kit.Cam:IsRecentering() then
+		table.insert(problems, "D: RECENTER while flying broke the flight camera")
+	end
+	local cas = world.Game:GetService("ContextActionService")
+	local cockpitUI = me:FindFirstChildOfClass("PlayerGui"):FindFirstChild("CockpitUI")
+	if not cockpitUI:FindFirstChild("Root"):FindFirstChild("ManualFlight").Visible then
+		table.insert(problems, "D: flight controls hidden after RECENTER")
+	end
+	local _ = cas
+
+	-- E: die while flying -> camera state released at once
+	local humanoid = me.Character:FindFirstChildOfClass("Humanoid")
+	humanoid.Health = 0
+	world:Advance(0.25)
+	if kit.Cam:IsPiloting() or kit.Cam:GetTiltWeight() ~= 0 or kit.Cam:IsRecentering() then
+		table.insert(problems, "E: camera state not reset on death")
+	end
+	if button.Visible then
+		table.insert(problems, "E: RECENTER button still shown while dead")
+	end
+
+	-- F: respawn -> normal camera on the new character, recenter works
+	local old = me.Character
+	advanceUntil(world, function()
+		return me.Character ~= old and me.Character ~= nil
+	end, 10)
+	world:Advance(1)
+	local newHumanoid = me.Character:FindFirstChildOfClass("Humanoid")
+	if kit.Camera.CameraSubject ~= newHumanoid then
+		table.insert(problems, "F: camera subject is not the respawned character")
+	end
+	if not button.Visible then
+		table.insert(problems, "F: RECENTER button hidden after respawn")
+	end
+	if kit.Cam:IsPiloting() or kit.Cam:GetTiltWeight() ~= 0 then
+		table.insert(problems, "F: stale flight camera state after respawn")
+	end
+	kit.Mess(-60, 90)
+	world.M.signalFor(button, "Activated"):Fire()
+	world:Advance(2)
+	kit.ExpectNatural(problems, "F")
+	return problems
+end)
+
+scenario("Camera: round ends while flying -> camera released to Roblox (G)", function(world)
+	local problems = {}
+	world:Boot()
+	world:Advance(1)
+	config(world, "GameConfig").StudioForceDisaster = "NavigationFailure"
+	local bots = Bots.attach(world, { Seed = 78 })
+	local me = world:AddPlayer("Pilot")
+	world:AttachClient(me)
+	world:Advance(1)
+	local kit = cameraKit(world, me)
+	boardAndTakeControl(world, me, kit, problems)
+	kit.Attitude.Roll, kit.Attitude.Pitch = 8, 3
+	bots.Add(me) -- let the bot play the rest of the round
+	local checked = false
+	local _, finished = runRounds(world, 1, 900, function(phase)
+		if phase == "Landing" then
+			kit.Cam:SetPiloting(true) -- still flying when the round ends
+		elseif phase == "Results" and not checked then
+			checked = true
+			if kit.Cam:IsPiloting() or kit.Cam:GetTiltWeight() ~= 0 or kit.Cam:IsRecentering() then
+				table.insert(problems, "G: camera state not released when the round ended")
+			end
+			local humanoid = me.Character and me.Character:FindFirstChildOfClass("Humanoid")
+			if kit.Camera.CameraSubject ~= humanoid then
+				table.insert(problems, "G: camera subject is not the player's character after the round")
+			end
+		end
+	end)
+	if finished < 1 or not checked then
+		table.insert(problems, "round did not finish")
+	end
+	world:Advance(1)
+	if math.abs(kit.Roll()) > 0.5 then
+		table.insert(problems, string.format("G: camera still rolled %.1f degrees after the round", kit.Roll()))
+	end
+	return problems
+end)
 
 scenario("Player leaves mid-round (Crisis)", function(world)
 	local problems = {}

@@ -110,6 +110,10 @@ A round lasts roughly 5–8 minutes. Every timing lives in `src/shared/Config/Ga
   target on touch. Hold-to-use with progress bars. The server re-checks every trigger.
 - **Mobile:** UI scales to the screen, respects safe-area insets and enforces a minimum touch target
   size. The cockpit controls and decision cards have on-screen buttons.
+- **Camera:** Roblox's default camera, with one owner (`CameraController`) layering shake and, while
+  you fly the aircraft, a tilt from its attitude. The layer is removed every frame before the
+  Roblox camera runs, so it never builds up. Releasing the controls, or pressing **⟲ RECENTER**
+  (`V` / right stick click), glides the view back to an upright, eye-level angle behind you.
 - **Economy:** Flight Credits for surviving, objectives, rescues, helping passengers, good
   decisions, bravery, evacuating, plus a first-flight-of-the-day bonus. A typical survived round
   pays 150–300 FC and cosmetics cost 200–1,300 FC.
@@ -153,7 +157,8 @@ src/client/  -> StarterPlayerScripts.Client
   Main.client.luau, ClientState.luau
   UI/                           UIKit (themeable components, scaling), Sfx
   Controllers/                  HUD, Prompt, Decision, Cockpit, Shop, Profile, Emote, Results,
-                                Effects, Lighting, OutsideWorld, Sound, Camera (spectate),
+                                Effects, Lighting, OutsideWorld, Sound, Camera (owner: flight tilt,
+                                recenter, spectate),
                                 Character, ChatTag
 src/character/                  replaces default health regen (health is server-controlled)
 tests/sim/                      headless server + client simulation (see Testing)
@@ -179,6 +184,8 @@ use equipment, trigger prompts, fight fires, vote, fly the approach and evacuate
 
 - every disaster played solo and with a squad of 4
 - 6-player and 8–14 player stress runs over several rounds with cooperative, selfish and idle bots
+- the camera: flight tilt while piloting (no drift), smooth recenter on release and from the
+  RECENTER button, clean reset on death, respawn and round end
 - a player leaving mid-round, a player dying (respawns at the terminal, can spectate), everyone
   dying, a late joiner waiting for the next flight, a disaster module crashing (safe fallback)
 - a DataStore outage (temporary profile, never written, merged on recovery)

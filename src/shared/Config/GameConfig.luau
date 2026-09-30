@@ -135,6 +135,11 @@ GameConfig.Manual = {
 GameConfig.Camera = {
 	FlightMaxZoom = 12,
 	LobbyMaxZoom = 28,
+	-- camera tilt from aircraft attitude while flying (degrees of view per degree of attitude)
+	FlightTilt = { Roll = 0.6, Pitch = 0.9, Max = 7 },
+	FlightTiltBlendTime = 0.4, -- seconds to blend the tilt in when control starts / out when it ends
+	RecenterTime = 0.55, -- seconds for the smooth recenter back to the normal view
+	RecenterPitch = -12, -- degrees; slightly above eye level, looking down the character's heading
 }
 
 -- Per-remote rate limits: {tokens, refill per second}

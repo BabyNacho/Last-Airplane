@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local GameConfig = require(ReplicatedStorage.Shared.Config.GameConfig)
 local MapConfig = require(ReplicatedStorage.Shared.Config.MapConfig)
 local Net = require(ReplicatedStorage.Shared.Net)
 local ClientState = require(script.Parent.Parent.ClientState)
@@ -319,11 +320,15 @@ local function conditionOverlays()
 	end
 end
 
-local function cameraStep()
-	local camera = Workspace.CurrentCamera
-	if not camera then
-		return
-	end
+-- Camera effect layer. CameraController owns the camera and the render-step bindings; it asks
+-- for this offset once per frame, applies it on top of the Roblox camera and removes it again
+-- before the Roblox camera runs next frame, so shake and tilt never accumulate into the view.
+-- `tiltWeight` (0..1) blends in the attitude tilt; CameraController only raises it while the
+-- local player is flying the aircraft.
+local smoothRoll = 0
+local smoothPitch = 0
+
+function EffectsController:CameraOffset(camera: Camera, tiltWeight: number, dt: number): CFrame
 	local now = os.clock()
 	local intensity = 0
 	for i = #shakes, 1, -1 do
@@ -348,14 +353,18 @@ local function cameraStep()
 		local amount = intensity * 0.012
 		offset = CFrame.Angles(rng:NextNumber(-amount, amount), rng:NextNumber(-amount, amount), rng:NextNumber(-amount, amount) * 0.5)
 	end
-	if inPlane and ClientState.Flight("OnGround") ~= true then
-		local roll = math.rad((ClientState.Flight("Roll") or 0) * 0.35)
-		local pitch = math.rad((ClientState.Flight("Pitch") or 0) * 0.25)
-		offset *= CFrame.Angles(pitch, 0, roll)
+	local airborne = inPlane and ClientState.Flight("OnGround") ~= true
+	local tilt = GameConfig.Camera.FlightTilt
+	local goalRoll = if airborne then math.clamp((ClientState.Flight("Roll") or 0) * tilt.Roll, -tilt.Max, tilt.Max) else 0
+	local goalPitch = if airborne then math.clamp((ClientState.Flight("Pitch") or 0) * tilt.Pitch, -tilt.Max, tilt.Max) else 0
+	-- attitude arrives at 10 Hz; smooth it so the horizon glides instead of stepping
+	local blend = 1 - math.exp(-dt * 6)
+	smoothRoll += (goalRoll - smoothRoll) * blend
+	smoothPitch += (goalPitch - smoothPitch) * blend
+	if tiltWeight > 0 then
+		offset *= CFrame.Angles(math.rad(smoothPitch * tiltWeight), 0, math.rad(smoothRoll * tiltWeight))
 	end
-	if offset ~= CFrame.identity then
-		camera.CFrame *= offset
-	end
+	return offset
 end
 
 ---------------------------------------------------------------- lifecycle
@@ -417,7 +426,6 @@ function EffectsController:Start()
 		end
 	end)
 	watchWindows()
-	RunService:BindToRenderStep("LF_CameraEffects", Enum.RenderPriority.Camera.Value + 1, cameraStep)
 	RunService.Heartbeat:Connect(conditionOverlays)
 end
 

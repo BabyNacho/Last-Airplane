@@ -15,6 +15,8 @@ local UIKit = require(script.Parent.Parent.UI.UIKit)
 
 local CockpitController = {}
 
+local controllers: any
+
 local C = UIKit.Colors
 local F = UIKit.Fonts
 
@@ -131,7 +133,8 @@ local function bindKeys(enabled: boolean)
 	end
 end
 
-function CockpitController:Init()
+function CockpitController:Init(all)
+	controllers = all
 	local gui = UIKit.Screen("CockpitUI", 6)
 	build(UIKit.Root(gui))
 end
@@ -154,6 +157,8 @@ function CockpitController:Start()
 			visible = active
 			panel.Visible = active
 			bindKeys(active)
+			-- flight camera on while flying; on release CameraController recenters to eye level
+			controllers.CameraController:SetPiloting(active)
 			if not active then
 				touchInput = 0
 				stickInput = 0

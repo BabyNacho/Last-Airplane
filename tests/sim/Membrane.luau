@@ -17,7 +17,7 @@ local EVENT_NAMES = {
 	PromptGamePassPurchaseFinished = true, PromptProductPurchaseFinished = true, Event = true, MoveToFinished = true,
 	PromptShown = true, PromptHidden = true, PromptTriggered = true, AncestryChanged = true,
 	MouseEnter = true, MouseLeave = true, MouseButton1Down = true, MouseButton1Up = true, MouseButton1Click = true,
-	FocusLost = true, InputBegan = true, InputEnded = true, InputChanged = true,
+	FocusLost = true, InputBegan = true, InputEnded = true, InputChanged = true, Seated = true,
 }
 
 local SHADOW_OK = {
@@ -325,6 +325,7 @@ function Membrane.new(scheduler, hooks)
 		humanoid.Sit = true
 		fireChanged(seat, "Occupant")
 		fireChanged(humanoid, "SeatPart")
+		signalFor(humanoid, "Seated"):Fire(true, proxy)
 	end
 	overrides.LoadAnimation = function(_proxy, animation)
 		local track = { Looped = false, Priority = nil, IsPlaying = false, Animation = animation }
@@ -486,15 +487,19 @@ function Membrane.new(scheduler, hooks)
 			shadowSet(inst, "__Dead", true)
 			signalFor(inst, "Died"):Fire()
 		elseif key == "Sit" and inst:IsA("Humanoid") and raw == false then
-			local seat = shadowGet(inst, "SeatPart")
-			if seat then
-				shadows[idOf(inst)].SeatPart = nil
-				local seatShadow = shadows[idOf(seat)]
-				if seatShadow then
-					seatShadow.Occupant = nil
+			-- like the engine, the seat releases the humanoid on the next step, not synchronously
+			lib.defer(function()
+				local seat = shadowGet(inst, "SeatPart")
+				if seat and not inst.Sit then
+					shadows[idOf(inst)].SeatPart = nil
+					local seatShadow = shadows[idOf(seat)]
+					if seatShadow then
+						seatShadow.Occupant = nil
+					end
+					fireChanged(seat, "Occupant")
+					signalFor(inst, "Seated"):Fire(false, nil)
 				end
-				fireChanged(seat, "Occupant")
-			end
+			end)
 		elseif key == "Parent" then
 			if raw then
 				signalFor(raw, "ChildAdded"):Fire(proxy)

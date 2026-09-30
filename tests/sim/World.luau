@@ -141,8 +141,8 @@ function World.new(options: { StoreFailures: number?, Seed: number?, PlacePath: 
 	self.RenderBindings = renderBindings
 	services.RunService = {
 		RenderStepped = M.Signal.new("RenderStepped"),
-		BindToRenderStep = function(_, name, _priority, fn)
-			renderBindings[name] = fn
+		BindToRenderStep = function(_, name, priority, fn)
+			renderBindings[name] = { Priority = priority, Fn = fn }
 		end,
 		UnbindFromRenderStep = function(_, name)
 			renderBindings[name] = nil
@@ -517,21 +517,46 @@ function World.new(options: { StoreFailures: number?, Seed: number?, PlacePath: 
 		local main = clientFolder:FindFirstChild("Main")
 		local fn = luau.load(main.Source, { debugName = "ClientMain", environment = env(M.wrap(main)) })
 		lib.spawn(fn)
+		-- Stand-in for Roblox's default (Classic) camera: like the real one it takes its look
+		-- direction from the current Camera.CFrame every frame and orbits the subject at a fixed
+		-- zoom, upright, with pitch limited to +-80 degrees.
+		local function robloxCamera()
+			local subject = camera.CameraSubject
+			local character = if subject and subject.Parent then subject.Parent else playerProxy.Character
+			local root = character and character:FindFirstChild("HumanoidRootPart")
+			if not root then
+				return
+			end
+			local focus = root.Position + roblox.Vector3.new(0, 1.5, 0)
+			local look = camera.CFrame.LookVector
+			if camera.CFrame.Position.Magnitude < 1e-6 or (camera.CFrame.Position - focus).Magnitude > 60 then
+				look = (root.CFrame.LookVector - roblox.Vector3.new(0, 0.3, 0)).Unit -- first frame / after a teleport
+			end
+			local pitch = math.clamp(math.asin(math.clamp(look.Y, -1, 1)), math.rad(-80), math.rad(80))
+			local flat = roblox.Vector3.new(look.X, 0, look.Z)
+			flat = if flat.Magnitude > 1e-4 then flat.Unit else roblox.Vector3.new(0, 0, -1)
+			look = flat * math.cos(pitch) + roblox.Vector3.new(0, math.sin(pitch), 0)
+			camera.CFrame = roblox.CFrame.fromMatrix(focus - look * 10, look:Cross(roblox.Vector3.new(0, 1, 0)).Unit, look:Cross(roblox.Vector3.new(0, 1, 0)).Unit:Cross(look))
+			camera.Focus = roblox.CFrame.new(focus)
+		end
+		self.RobloxCamera = robloxCamera
 		-- frame loop
 		lib.spawn(function()
 			local run = services.RunService
 			while true do
 				lib.wait(1 / 15)
-				local character = playerProxy.Character
-				local root = character and character:FindFirstChild("HumanoidRootPart")
-				if root then
-					camera.CFrame = root.CFrame * roblox.CFrame.new(0, 2, 8)
-					camera.Focus = root.CFrame
-				end
 				run.Heartbeat:Fire(1 / 15)
 				run.RenderStepped:Fire(1 / 15)
+				-- render steps in priority order; the stand-in for Roblox's camera runs at Camera (200)
+				local steps = { { Priority = 200, Fn = robloxCamera } }
 				for _, binding in renderBindings do
-					binding(1 / 15)
+					table.insert(steps, binding)
+				end
+				table.sort(steps, function(a, b)
+					return a.Priority < b.Priority
+				end)
+				for _, step in steps do
+					step.Fn(1 / 15)
 				end
 			end
 		end)
