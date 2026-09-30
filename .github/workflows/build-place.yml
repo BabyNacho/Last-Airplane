@@ -1,0 +1,72 @@
+name: Build Roblox place
+
+# Builds LastFlight.rbxl from the source with Rojo and publishes it as a downloadable artifact.
+# The .rbxl is never committed to the repository.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/last-flight-roblox-game-cg9vuk
+
+permissions:
+  contents: read
+
+jobs:
+  build-place:
+    name: Build LastFlight.rbxl
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ROJO_VERSION: 7.4.4
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rojo ${{ env.ROJO_VERSION }}
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 --retry-delay 2 -o rojo.zip \
+            "https://github.com/rojo-rbx/rojo/releases/download/v${ROJO_VERSION}/rojo-${ROJO_VERSION}-linux-x86_64.zip"
+          mkdir -p "$RUNNER_TEMP/rojo"
+          unzip -o rojo.zip -d "$RUNNER_TEMP/rojo"
+          rm rojo.zip
+          chmod +x "$RUNNER_TEMP/rojo/rojo"
+          echo "$RUNNER_TEMP/rojo" >> "$GITHUB_PATH"
+
+      - name: Show Rojo version
+        run: rojo --version
+
+      - name: Build place
+        run: rojo build default.project.json -o LastFlight.rbxl
+
+      - name: Verify LastFlight.rbxl
+        run: |
+          set -euo pipefail
+          if [ ! -f LastFlight.rbxl ]; then
+            echo "::error::LastFlight.rbxl was not created"
+            exit 1
+          fi
+          size=$(stat -c %s LastFlight.rbxl)
+          if [ "$size" -lt 1024 ]; then
+            echo "::error::LastFlight.rbxl is unexpectedly small ($size bytes)"
+            exit 1
+          fi
+          # Binary Roblox place files start with the magic header "<roblox!"
+          magic=$(head -c 8 LastFlight.rbxl)
+          if [ "$magic" != "<roblox!" ]; then
+            echo "::error::LastFlight.rbxl does not have a valid Roblox binary header"
+            exit 1
+          fi
+          echo "LastFlight.rbxl OK ($size bytes)"
+          echo "### LastFlight.rbxl built ($size bytes)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Download it from the **LastFlight-Roblox-Place** artifact below." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LastFlight-Roblox-Place
+          path: LastFlight.rbxl
+          if-no-files-found: error
+          retention-days: 30
