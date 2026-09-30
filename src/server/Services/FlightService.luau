@@ -53,6 +53,11 @@ local DEFAULTS = {
 	EngineFireL = false,
 	EngineFireR = false,
 	CockpitAlarm = false,
+	FireAlarmActive = false,
+	InstrumentsFailed = false,
+	PressureAlarm = false,
+	EngineSmokeL = false,
+	EngineSmokeR = false,
 	RunwaySide = 0,
 	Descent = 0,
 }

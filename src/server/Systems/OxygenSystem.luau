@@ -25,6 +25,7 @@ local bottleUsers: { [Player]: Tool } = {}
 local maskHandles: { any } = {}
 local maskSupply = math.huge
 local drainScale = 1
+local ignoreAltitude = false
 
 function OxygenSystem:IsActive(): boolean
 	return activeEmergency
@@ -114,11 +115,13 @@ end
 
 -- Starts an oxygen emergency. options.Supply = seconds of mask oxygen (default unlimited),
 -- options.DrainScale multiplies how fast unmasked players run out.
-function OxygenSystem:Begin(ctx, options: { Supply: number?, DrainScale: number? }?)
+-- options.IgnoreAltitude keeps the emergency active at any altitude (pressure surges, venting).
+function OxygenSystem:Begin(ctx, options: { Supply: number?, DrainScale: number?, IgnoreAltitude: boolean? }?)
 	ctxRef = ctx
 	activeEmergency = true
 	maskSupply = options and options.Supply or math.huge
 	drainScale = options and options.DrainScale or 1
+	ignoreAltitude = options and options.IgnoreAltitude or false
 	Registry.MapService:DeployMasks(true)
 	Registry.FlightService:Set("OxygenEmergency", true)
 	if #maskHandles == 0 then
@@ -135,6 +138,7 @@ function OxygenSystem:End()
 		return
 	end
 	activeEmergency = false
+	ignoreAltitude = false
 	Registry.FlightService:Set("OxygenEmergency", false)
 	if ctxRef then
 		for _, player in ctxRef:Players() do
@@ -172,7 +176,7 @@ local function step(dt: number)
 		end
 	end
 	local altitude = Registry.FlightService:Get("Altitude")
-	local safe = altitude < OxygenSystem.SafeAltitude
+	local safe = not ignoreAltitude and altitude < OxygenSystem.SafeAltitude
 	for _, player in ctx:AlivePlayers() do
 		if not Registry.ConditionService:Get(player) then
 			continue

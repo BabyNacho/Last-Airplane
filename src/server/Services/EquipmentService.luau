@@ -48,6 +48,14 @@ local DEFINITIONS = {
 		Shape = "Block",
 		Grip = CFrame.new(0, 0, 0),
 	},
+	SpeedTape = {
+		Name = "Speed Tape",
+		Tip = "Aluminium tape for sealing cracks",
+		Color = Color3.fromRGB(190, 195, 205),
+		Size = Vector3.new(1, 1, 0.4),
+		Shape = "Cylinder",
+		Grip = CFrame.new(0, 0, 0),
+	},
 	CrashAxe = {
 		Name = "Crash Axe",
 		Tip = "Can force the cockpit door open",
