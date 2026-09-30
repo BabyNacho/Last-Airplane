@@ -265,7 +265,8 @@ local function step(dt: number)
 		visuals(cell)
 		if now >= cell.NextSpread then
 			cell.NextSpread = now + Util.RandomRange(round.Rng, CFG.SpreadInterval)
-			if cell.Intensity > 35 then
+			local cap = math.clamp(CFG.BaseMaxFires + CFG.PerPlayerMaxFires * round:AliveCount(), CFG.BaseMaxFires, CFG.AbsoluteMaxFires)
+			if cell.Intensity > CFG.SpreadThreshold and FireSystem:ActiveCount() < cap then
 				local candidates = {}
 				for _, neighbor in cell.Neighbors do
 					if not active[neighbor] and not blocked(cell, neighbor) then

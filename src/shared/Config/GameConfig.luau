@@ -73,7 +73,13 @@ GameConfig.Oxygen = {
 
 GameConfig.Fire = {
 	TickInterval = 1,
-	SpreadInterval = { 9, 14 },
+	SpreadInterval = { 12, 18 },
+	SpreadThreshold = 50, -- a cell must be this intense before it spreads
+	-- Concurrent burning cells are capped by crew size so a solo player can still win:
+	-- cap = clamp(BaseMaxFires + PerPlayerMaxFires * alivePlayers, BaseMaxFires, AbsoluteMaxFires)
+	BaseMaxFires = 4,
+	PerPlayerMaxFires = 2,
+	AbsoluteMaxFires = 14,
 	MaxIntensity = 100,
 	StartIntensity = 45,
 	GrowthPerTick = 1.6,
@@ -114,6 +120,8 @@ GameConfig.Landing = {
 	},
 	UnresolvedCriticalPenalty = 12,
 	ActiveFirePenalty = 14,
+	ActiveFirePenaltyPerExtra = 2,
+	ActiveFirePenaltyMax = 30,
 }
 
 GameConfig.Manual = {

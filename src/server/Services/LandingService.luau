@@ -207,7 +207,7 @@ function LandingService:ComputeScore(ctx, aborted: boolean): (number, { any })
 	end
 	local fires = Registry.FireSystem:ActiveCount()
 	if fires > 0 then
-		local penalty = CFG.ActiveFirePenalty + (fires - 1) * 2
+		local penalty = math.min(CFG.ActiveFirePenaltyMax, CFG.ActiveFirePenalty + (fires - 1) * CFG.ActiveFirePenaltyPerExtra)
 		score -= penalty
 		table.insert(notes, { Delta = -penalty, Note = "Fire still burning aboard" })
 	end

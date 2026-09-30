@@ -184,6 +184,14 @@ for _, disaster in DISASTERS do
 				result.Title, result.LandingTier, result.LandingScore, tostring(result.Personal and result.Personal.Survived),
 				result.Personal and result.Personal.Credits or 0, result.Objectives.Completed, result.Objectives.Total, #result.Decisions,
 				if result.Personal and not result.Personal.Survived then " | cause: " .. tostring(result.Personal.Cause) else ""))
+			if process.env.SIM_VERBOSE then
+				for _, note in result.LandingNotes do
+					print(string.format("         %+4d  %s", note.Delta or 0, note.Note))
+				end
+				for _, decision in result.Decisions do
+					print("         decision: " .. tostring(decision.Title) .. " -> " .. tostring(decision.Choice) .. " | " .. tostring(decision.Outcome))
+				end
+			end
 		end
 		local profile = registry(world).DataService:Get(player)
 		if not profile or profile.Stats.Flights ~= 1 then
@@ -237,6 +245,52 @@ scenario("Multiplayer: 6 players, 3 random rounds, mixed behaviour", function(wo
 	end
 	return problems
 end)
+
+for index, disaster in DISASTERS do
+	scenario("Squad of 4: " .. disaster, function(world)
+		local problems = {}
+		world:Boot()
+		world:Advance(1)
+		config(world, "GameConfig").StudioForceDisaster = disaster
+		local bots = Bots.attach(world, { Seed = index * 977 })
+		local players = {}
+		for i = 1, 4 do
+			local player = world:AddPlayer("Squad" .. i)
+			bots.Add(player, if i == 4 then "selfish" else "cooperative")
+			table.insert(players, player)
+		end
+		local _, finished = runRounds(world, 1, 800)
+		if finished < 1 then
+			table.insert(problems, "round did not finish")
+		end
+		local result = resultsFor(world, players[1])
+		if result then
+			print(string.format("      -> %s | %s (%d) | %d/%d survived | rescues %d | objectives %d/%d", result.Title, result.LandingTier, result.LandingScore, result.Survivors, result.Total, result.Rescued, result.Objectives.Completed, result.Objectives.Total))
+		else
+			table.insert(problems, "no results")
+		end
+		return problems
+	end)
+end
+
+for seed = 1, 4 do
+	scenario("Stress: random disasters, seed " .. seed, function(world)
+		local problems = {}
+		world:Boot()
+		world:Advance(1)
+		local bots = Bots.attach(world, { Seed = seed * 7919 })
+		local count = 6 + seed * 2
+		local policies = { "cooperative", "selfish", "idle" }
+		for i = 1, count do
+			bots.Add(world:AddPlayer("S" .. seed .. "_" .. i), policies[(i % 3) + 1])
+		end
+		local _, finished = runRounds(world, 2, 1600)
+		if finished < 2 then
+			table.insert(problems, "only " .. finished .. " rounds finished")
+		end
+		return problems
+	end)
+end
 
 scenario("Player leaves mid-round (Crisis)", function(world)
 	local problems = {}
