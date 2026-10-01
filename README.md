@@ -50,7 +50,9 @@ in Edit mode. That's expected. A round begins after the 30s lobby countdown; use
 Products to create (suggested prices are in `MonetizationConfig`):
 
 - Game passes: `VIP` (VIP Boarding Pass), `EmotePass`
-- Developer products: `CreditsSmall`, `CreditsMedium`, `CreditsLarge`, `FirstClassBundle`, `PartyPack`, `JetpackReplica`
+- Developer products: `CreditsSmall`, `CreditsMedium`, `CreditsLarge`, `FirstClassBundle`, `PartyPack`, `JetpackReplica`,
+  and the Sky Shop additions `NeonPilotBadge` (R$19), `CyberPlane` (R$49), `StormRiderPack` (R$79),
+  `GoldenTraveler` (R$99), `LuxuryPlane` (R$99)
 
 ---
 
@@ -116,10 +118,20 @@ A round lasts roughly 5–8 minutes. Every timing lives in `src/shared/Config/Ga
   (`V` / right stick click), glides the view back to an upright, eye-level angle behind you.
 - **Economy:** Flight Credits for surviving, objectives, rescues, helping passengers, good
   decisions, bravery, evacuating, plus a first-flight-of-the-day bonus. A typical survived round
-  pays 150–300 FC and cosmetics cost 200–1,300 FC.
-- **Shop (Duty Free):** hats, face and body accessories (built from parts, no uploads needed),
-  titles, trails, emotes, victory effects, UI themes and bundles. Robux items use the official
-  MarketplaceService prompts. Nothing sold affects survival.
+  pays 150–300 FC and cosmetics cost 80–1,500 FC.
+- **Sky Shop:** a card-based store with a 🔥 Featured page (always-on highlights, three "today's
+  picks" that rotate by date, starter picks, bundles) and tabs for ✈️ Flight Gear, 😎 Outfits,
+  🎭 Emotes, 🛩️ Plane cosmetics, ✨ Effects, 🎁 Bundles, 💎 Passes & Credits and 🧳 My Loadout.
+  116 cosmetics with five rarities (Common, Rare, Epic, Legendary, Ultra); every category runs
+  cheap → mid → premium, with plenty of items under 250 FC. Cards show art, rarity, price and a
+  clear PREVIEW + BUY/EQUIP pair. Previews show your own avatar wearing the item (or a mini
+  aircraft for plane cosmetics) in 3D, with animated effect overlays. Flight Credit purchases need
+  a second "tap to confirm", owned items switch to EQUIP / EQUIPPED, and buying or equipping plays
+  a short celebration. Bundles list their contents, and when everything inside is also sold on
+  its own, the store shows what it would cost separately (no made-up "was" prices). A short,
+  skippable intro greets first-time visitors. Everything is built from parts and particles (no
+  uploads needed) and nothing sold affects survival. Plane cosmetics only change how the
+  aircraft looks on your own screen.
 - **VIP pass:** VIP title and chat tag, VIP lounge access, Golden Wake trail, Gold UI theme and +20% credits.
 - **Progression:** 16 tracked stats, 21 achievements (some unlock exclusive titles), disaster
   mastery levels, and daily and weekly challenges.
@@ -139,6 +151,7 @@ src/shared/  -> ReplicatedStorage.Shared
                                 MonetizationConfig, AchievementConfig, ChallengeConfig, SoundConfig,
                                 UIConfig, MapConfig
   Net.luau                      every RemoteEvent/RemoteFunction, created by the server at boot
+  CosmeticBuilder.luau          builds every cosmetic (character + aircraft) from parts/particles
   Maid, Signal, Util, Enums
 src/server/  -> ServerScriptService.Server
   Main.server.luau              boots services in order (Init, then Start)
@@ -155,8 +168,9 @@ src/server/  -> ServerScriptService.Server
   Map/                          AirplaneBuilder, LobbyBuilder, BuildUtil
 src/client/  -> StarterPlayerScripts.Client
   Main.client.luau, ClientState.luau
-  UI/                           UIKit (themeable components, scaling), Sfx
-  Controllers/                  HUD, Prompt, Decision, Cockpit, Shop, Profile, Emote, Results,
+  UI/                           UIKit (themeable components, scaling), Sfx, StoreArt (shop art + previews)
+  Controllers/                  HUD, Prompt, Decision, Cockpit, Shop (Sky Shop), PlaneCosmetic,
+                                Profile, Emote, Results,
                                 Effects, Lighting, OutsideWorld, Sound, Camera (owner: flight tilt,
                                 recenter, spectate),
                                 Character, ChatTag
@@ -190,6 +204,10 @@ use equipment, trigger prompts, fight fires, vote, fly the approach and evacuate
   dying, a late joiner waiting for the next flight, a disaster module crashing (safe fallback)
 - a DataStore outage (temporary profile, never written, merged on recovery)
 - idempotent receipt processing and shop validation, including exploit-shaped remote payloads
+- the Sky Shop: catalog integrity and a no-pay-to-win audit, bundles and derived ownership, every
+  loadout slot, saved loadout and intro flag, a Robux bundle receipt, and the store UI on phone,
+  small phone, tablet and desktop (every page, previews, confirm-to-buy, celebration, equip,
+  loadout picker, plane skin on the aircraft, minimum text and touch-target sizes)
 - the full client UI on desktop, tablet and phones (touch input, small viewports) while a random
   button fuzzer clicks through the HUD, shop, records, decisions and results screens
 
@@ -211,7 +229,9 @@ list layout, and a non-existent ParticleEmitter property.
   `DisasterBase.extend("MyDisaster")`, implement any of `Setup / Clues / Start / Crisis / Final /
   OnTouchdown / RevealDetail / Cleanup`, then add an entry to `DisasterConfig.Disasters`. The base
   class gives you objectives, prompts, votes, announcements, effects and landing adjustments.
-- **New cosmetic:** add an entry to `ShopCatalog` (accessories take a `Shape` from `CosmeticService`).
+- **New cosmetic:** add an entry to `ShopCatalog` (shapes, outfit styles, auras and plane looks
+  are built by `src/shared/CosmeticBuilder.luau`). Never rename an existing id: ids are saved in
+  player data. Add a Robux item by adding a product to `MonetizationConfig` and setting `Product`.
 - **New achievement or challenge:** add a row to `AchievementConfig` / `ChallengeConfig`.
 - **New aircraft section:** add a builder function in `AirplaneBuilder` and a range in `MapConfig.Sections`.
 
@@ -222,5 +242,9 @@ list layout, and a non-existent ParticleEmitter property.
 - The simulation covers server logic and client UI code paths, but not rendering, physics or feel.
   Tune visuals and difficulty with real play sessions in Studio.
 - Default sounds are Roblox built-in placeholders; supply licensed audio before release.
-- Shop previews are stylised icons and swatches, not 3D renders.
+- Store card art is drawn from UI shapes and emoji, not rendered images; the PREVIEW sheet shows the
+  real 3D cosmetic. Particle effects (trails, auras) are previewed as 2D animations, because Roblox
+  doesn't render particles inside a ViewportFrame.
+- New emotes reuse Roblox's built-in emote animations at different speeds, plus an emoji bubble.
+  Upload your own animations and set `Data.AnimationId` in `ShopCatalog` for fully custom moves.
 - Robux purchases need the product ids from the manual steps above.

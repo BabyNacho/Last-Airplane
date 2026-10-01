@@ -227,7 +227,7 @@ function PromptController:Start()
 		if kiosk == "Shop" then
 			controllers.ShopController:Open()
 		elseif kiosk == "Wardrobe" then
-			controllers.ProfileController:Open("Wardrobe")
+			controllers.ShopController:Open("Loadout")
 		elseif kiosk == "Records" then
 			controllers.ProfileController:Open("Records")
 		end

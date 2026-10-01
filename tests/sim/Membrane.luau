@@ -335,6 +335,9 @@ function Membrane.new(scheduler, hooks)
 		function track.Stop(t)
 			t.IsPlaying = false
 		end
+		function track.AdjustSpeed(t, speed)
+			t.Speed = speed
+		end
 		track.Stopped = Signal.new("Stopped")
 		return track
 	end
@@ -418,7 +421,8 @@ function Membrane.new(scheduler, hooks)
 			return nil
 		end
 		local override = overrides[key]
-		if override then
+		-- Seat:Sit() is a method, but Humanoid.Sit is a boolean property
+		if override and not (key == "Sit" and inst:IsA("Humanoid")) then
 			return override
 		end
 		if key == "Position" and inst:IsA("BasePart") then

@@ -34,6 +34,7 @@ Net.Events = {
 	"Equip",
 	"PlayEmote",
 	"PilotInput",
+	"StoreIntroSeen",
 }
 
 Net.Functions = {

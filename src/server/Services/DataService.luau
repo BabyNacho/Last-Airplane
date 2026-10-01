@@ -76,6 +76,7 @@ function DataService.Template()
 		Challenges = { Day = 0, Daily = {}, DailyClaimed = {}, Week = 0, Weekly = {}, WeeklyClaimed = {}, WeekDisasters = {} },
 		LastDailyBonus = 0,
 		Receipts = {},
+		Flags = { StoreIntro = false },
 		FirstJoin = os.time(),
 		LastJoin = os.time(),
 	}
@@ -157,6 +158,11 @@ local function mergeTemporary(real, temp)
 	end
 	for _, receipt in temp.Receipts do
 		table.insert(real.Receipts, receipt)
+	end
+	for flag, value in temp.Flags or {} do
+		if value then
+			real.Flags[flag] = value
+		end
 	end
 	return real
 end
@@ -281,6 +287,7 @@ function DataService:Snapshot(player: Player)
 		Achievements = profile.Achievements,
 		Challenges = Registry.ChallengeService and Registry.ChallengeService:View(player) or nil,
 		Passes = Registry.MonetizationService and Registry.MonetizationService:PassesFor(player) or {},
+		Flags = profile.Flags,
 		Temporary = self:IsTemporary(player),
 	}
 end
@@ -347,6 +354,16 @@ function DataService:SetEquipped(player: Player, slot: string, itemId: string?)
 		return
 	end
 	profile.Equipped[slot] = itemId
+	self:MarkDirty(player)
+	self:Push(player)
+end
+
+function DataService:SetFlag(player: Player, flag: string, value: any)
+	local profile = profiles[player]
+	if not profile or profile.Flags[flag] == value then
+		return
+	end
+	profile.Flags[flag] = value
 	self:MarkDirty(player)
 	self:Push(player)
 end

@@ -10,6 +10,7 @@ local ORDER = {
 	"SoundController",
 	"LightingController",
 	"OutsideWorldController",
+	"PlaneCosmeticController",
 	"EffectsController",
 	"CameraController",
 	"CharacterController",

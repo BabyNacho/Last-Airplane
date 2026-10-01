@@ -151,14 +151,14 @@ local function renderMastery(profile)
 	end
 end
 
-local SLOT_LABELS = { Hat = "HAT", Face = "FACE", Body = "BODY", Title = "TITLE", Trail = "TRAIL", VictoryEffect = "VICTORY EFFECT", Theme = "INTERFACE THEME" }
 
 local function renderWardrobe(profile)
 	UIKit.List(body, 10)
 	local owned = profile.Owned or {}
 	local equipped = profile.Equipped or {}
 	for order, slot in ShopCatalog.Slots do
-		UIKit.Text({ Text = SLOT_LABELS[slot] or slot, Font = F.Heading, TextSize = 15, Accent = "TextColor3", LayoutOrder = order * 2, Parent = body })
+		local info = ShopCatalog.SlotInfo[slot] or {}
+		UIKit.Text({ Text = (info.Icon and info.Icon .. "  " or "") .. (info.Label or slot), Font = F.Heading, TextSize = 15, Accent = "TextColor3", LayoutOrder = order * 2, Parent = body })
 		local row = UIKit.Scroll({
 			Size = UDim2.new(1, -8, 0, UIKit.TouchSize(50) + 8),
 			AutomaticCanvasSize = Enum.AutomaticSize.X,
@@ -168,7 +168,7 @@ local function renderWardrobe(profile)
 		})
 		UIKit.List(row, 8, Enum.FillDirection.Horizontal)
 		local count = 0
-		local canUnequip = slot ~= "Title" and slot ~= "Theme"
+		local canUnequip = not info.Required
 		if canUnequip then
 			UIKit.Button({
 				Text = "NONE",
@@ -201,7 +201,7 @@ local function renderWardrobe(profile)
 			end
 		end
 		if count == 0 then
-			UIKit.Text({ Text = "Nothing owned yet - visit the Duty Free shop!", TextSize = 14, TextColor3 = C.SubText, Size = UDim2.fromOffset(400, 50), LayoutOrder = 1, Parent = row })
+			UIKit.Text({ Text = "Nothing owned yet - visit the Sky Shop!", TextSize = 14, TextColor3 = C.SubText, Size = UDim2.fromOffset(400, 50), LayoutOrder = 1, Parent = row })
 		end
 	end
 end

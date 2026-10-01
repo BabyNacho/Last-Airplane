@@ -15,7 +15,7 @@ local UIKit = require(script.Parent.Parent.UI.UIKit)
 local EmoteController = {}
 
 local panel: Frame
-local list: Frame
+local list: ScrollingFrame
 
 local function render()
 	for _, child in list:GetChildren() do
@@ -25,16 +25,18 @@ local function render()
 	end
 	local profile = ClientState.Profile
 	local owned = profile and profile.Owned or {}
+	local favourite = profile and profile.Equipped and profile.Equipped.Emote
 	local count = 0
 	for _, item in ShopCatalog.Items do
 		if item.Type == "Emote" and (item.Default or table.find(owned, item.Id)) then
 			count += 1
+			local isFavourite = item.Id == favourite
 			UIKit.Button({
-				Text = item.Name,
-				Style = "secondary",
+				Text = (if isFavourite then "★ " else "") .. (item.Data.Bubble and item.Data.Bubble .. "  " or "") .. item.Name,
+				Style = if isFavourite then "primary" else "secondary",
 				Size = UDim2.new(1, 0, 0, UIKit.TouchSize(46)),
 				TextSize = 16,
-				LayoutOrder = item.Order,
+				LayoutOrder = if isFavourite then -1 else item.Order,
 				Parent = list,
 				OnClick = function()
 					Net.Event("PlayEmote"):FireServer(item.Id)
@@ -70,7 +72,8 @@ function EmoteController:Init()
 	})
 	UIKit.List(panel, 8)
 	UIKit.Text({ Text = "EMOTES  [B]", Font = UIKit.Fonts.Heading, TextSize = 16, Accent = "TextColor3", LayoutOrder = 0, Parent = panel })
-	list = UIKit.new("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = 1, Parent = panel })
+	-- scrolls once you own lots of emotes
+	list = UIKit.Scroll({ Size = UDim2.new(1, 0, 0, 380), LayoutOrder = 1, Parent = panel })
 	UIKit.List(list, 6)
 end
 

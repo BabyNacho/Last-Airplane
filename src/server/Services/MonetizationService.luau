@@ -13,6 +13,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local MonetizationConfig = require(ReplicatedStorage.Shared.Config.MonetizationConfig)
+local ShopCatalog = require(ReplicatedStorage.Shared.Config.ShopCatalog)
 local Net = require(ReplicatedStorage.Shared.Net)
 local Registry = require(script.Parent.Parent.Registry)
 
@@ -84,6 +85,13 @@ local function grantProduct(player: Player, key: string)
 	end
 	for _, itemId in product.GrantItems or {} do
 		Registry.DataService:Grant(player, itemId)
+		-- bundles also record their contents (ShopService:Owns derives them either way)
+		local item = ShopCatalog.Get(itemId)
+		if item and item.Type == "Bundle" and item.Data then
+			for _, inner in item.Data.Items do
+				Registry.DataService:Grant(player, inner)
+			end
+		end
 	end
 end
 
@@ -113,7 +121,12 @@ local function processReceipt(receipt): Enum.ProductPurchaseDecision
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 	local product = MonetizationConfig.Products[key]
-	Net.Event("PurchaseResult"):FireClient(player, { Ok = true, Message = "Purchased " .. product.Name .. "! Thank you for supporting the game." })
+	Net.Event("PurchaseResult"):FireClient(player, {
+		Ok = true,
+		Message = "Purchased " .. product.Name .. "! Thank you for supporting the game.",
+		ItemId = product.GrantItems and product.GrantItems[1] or nil,
+		Credits = product.Credits,
+	})
 	Registry.EffectsService:Sound("Purchase", nil, player)
 	return Enum.ProductPurchaseDecision.PurchaseGranted
 end

@@ -145,8 +145,9 @@ local function resultsFor(world, player)
 end
 
 local function expectPhases(history, problems, survived: boolean?)
-	-- a round where everyone died legitimately skips straight to the landing
-	local required = if survived == false then { "Boarding", "Flight", "Landing", "Results" } else { "Boarding", "Flight", "Disaster", "Crisis", "FinalEvent", "Landing", "Results" }
+	-- a round where everyone died legitimately skips ahead; with nobody alive the landing resolves
+	-- instantly, often between two 0.5s polls, so it isn't required in that case
+	local required = if survived == false then { "Boarding", "Flight", "Results" } else { "Boarding", "Flight", "Disaster", "Crisis", "FinalEvent", "Landing", "Results" }
 	local index = 1
 	for _, phase in history do
 		if phase == required[index] then
@@ -983,6 +984,503 @@ scenario("Shop: buy, insufficient funds, equip, reject Robux-only item", functio
 	world:Advance(1)
 	return problems
 end)
+
+---------------------------------------------------------------- Sky Shop
+
+-- Data keys that would mean an item changes gameplay. No store item may carry any of them.
+local GAMEPLAY_KEYS = { "Health", "MaxHealth", "WalkSpeed", "JumpPower", "Speed_Gameplay", "Damage", "Armor", "Survival", "Immunity", "Oxygen", "Revive", "Objective", "Landing", "Credits", "Multiplier", "Shield" }
+local COSMETIC_TYPES = { Accessory = true, Outfit = true, Badge = true, Luggage = true, Title = true, Emote = true, Trail = true, Aura = true, VictoryEffect = true, Theme = true, PlaneSkin = true, WingEffect = true, PlaneTrail = true, Bundle = true }
+
+scenario("Sky Shop catalog: integrity, rarity, price progression, honest bundles, no pay-to-win", function(world)
+	local problems = {}
+	world:Boot()
+	local catalog = config(world, "ShopCatalog")
+	local monetization = config(world, "MonetizationConfig")
+	local seen = {}
+	local starters, mids, premiums, robuxCheap = 0, 0, 0, 0
+	local perCategory = {}
+	for _, item in catalog.Items do
+		if seen[item.Id] then
+			table.insert(problems, "duplicate id " .. item.Id)
+		end
+		seen[item.Id] = true
+		perCategory[item.Category] = (perCategory[item.Category] or 0) + 1
+		if not COSMETIC_TYPES[item.Type] then
+			table.insert(problems, item.Id .. " has non-cosmetic type " .. tostring(item.Type))
+		end
+		if not catalog.Rarities[item.Rarity] then
+			table.insert(problems, item.Id .. " has unknown rarity " .. tostring(item.Rarity))
+		end
+		if item.Slot and not table.find(catalog.Slots, item.Slot) then
+			table.insert(problems, item.Id .. " uses unknown slot " .. item.Slot)
+		end
+		if item.Type ~= "Bundle" and item.Type ~= "Title" and item.Type ~= "Emote" and not item.Slot then
+			table.insert(problems, item.Id .. " is equippable but has no slot")
+		end
+		if item.Product and not monetization.Products[item.Product] then
+			table.insert(problems, item.Id .. " references missing product " .. item.Product)
+		end
+		if item.Pass and not monetization.GamePasses[item.Pass] then
+			table.insert(problems, item.Id .. " references missing pass " .. item.Pass)
+		end
+		if not item.Description or #item.Description < 5 then
+			table.insert(problems, item.Id .. " has no description")
+		end
+		if not item.Default and not item.Price and not item.Product and not item.Pass and not item.Unlock and not catalog.BundlesContaining[item.Id] then
+			table.insert(problems, item.Id .. " can never be obtained")
+		end
+		for _, key in GAMEPLAY_KEYS do
+			if item.Data and item.Data[key] ~= nil then
+				table.insert(problems, item.Id .. " carries gameplay key " .. key)
+			end
+		end
+		if item.Price then
+			local tier = catalog.TierOf(item)
+			if tier == "Starter" then
+				starters += 1
+			elseif tier == "Mid" then
+				mids += 1
+			else
+				premiums += 1
+			end
+		end
+		if item.Product and not item.Exclusive and monetization.Products[item.Product].PriceHint <= 25 then
+			robuxCheap += 1
+		end
+		if item.Type == "Bundle" then
+			for _, inner in item.Data.Items do
+				if not catalog.Get(inner) then
+					table.insert(problems, item.Id .. " contains missing item " .. inner)
+				end
+			end
+			if item.Description:find("Save") or item.Description:find("%%") then
+				table.insert(problems, item.Id .. " claims a discount in its description")
+			end
+			local value = catalog.BundleValue(item)
+			if value and item.Price and value <= item.Price then
+				table.insert(problems, item.Id .. " costs as much as its contents bought separately")
+			end
+		end
+	end
+	for _, category in catalog.Categories do
+		if category ~= "Premium" and (perCategory[category] or 0) < 3 then
+			table.insert(problems, "category " .. category .. " has too few items")
+		end
+	end
+	for _, rarity in catalog.RarityOrder do
+		local count = 0
+		for _, item in catalog.Items do
+			if item.Rarity == rarity then
+				count += 1
+			end
+		end
+		if count == 0 then
+			table.insert(problems, "no " .. rarity .. " items")
+		end
+	end
+	if starters < 10 or mids < 10 or premiums < 6 then
+		table.insert(problems, string.format("price progression too thin (starter %d, mid %d, premium %d)", starters, mids, premiums))
+	end
+	if robuxCheap < 1 then
+		table.insert(problems, "no low-cost Robux cosmetic")
+	end
+	for _, id in catalog.Featured do
+		if not catalog.Get(id) then
+			table.insert(problems, "featured item missing: " .. id)
+		end
+	end
+	if #catalog.Featured < 3 or #catalog.Featured > 5 then
+		table.insert(problems, "featured should show 3-5 items")
+	end
+	for _, id in catalog.DailyPool do
+		if not catalog.Get(id) then
+			table.insert(problems, "daily pool item missing: " .. id)
+		end
+	end
+	local a, b = catalog.DailyPicks(20000), catalog.DailyPicks(20000)
+	if table.concat(a, ",") ~= table.concat(b, ",") or #a ~= catalog.DailyCount then
+		table.insert(problems, "daily picks are not deterministic")
+	end
+	local distinct = {}
+	for _, id in a do
+		if distinct[id] then
+			table.insert(problems, "daily picks repeat an item")
+		end
+		distinct[id] = true
+	end
+	-- Robux products may only grant cosmetics or Flight Credits
+	for key, product in monetization.Products do
+		for _, id in product.GrantItems or {} do
+			local item = catalog.Get(id)
+			if not item or not COSMETIC_TYPES[item.Type] then
+				table.insert(problems, "product " .. key .. " grants non-cosmetic " .. id)
+			end
+		end
+	end
+	print(string.format("      %d items | starter %d, mid %d, premium %d credit items | %d cheap Robux items", #catalog.Items, starters, mids, premiums, robuxCheap))
+	return problems
+end)
+
+scenario("Sky Shop server: bundles, derived ownership, new loadout slots, intro flag, Robux pack, visual-only", function(world)
+	local problems = {}
+	world:Boot()
+	world:Advance(1)
+	local player = world:AddPlayer("Collector")
+	world:Advance(3)
+	local R = registry(world)
+	local profile = R.DataService:Get(player)
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	local before = { WalkSpeed = humanoid.WalkSpeed, JumpPower = humanoid.JumpPower, MaxHealth = humanoid.MaxHealth, Health = humanoid.Health }
+	profile.Credits = 5000
+	local function buy(id: string)
+		world:ClientFire("ShopPurchase", player, id)
+		world:Advance(1.2)
+	end
+	-- a bundle grants its contents, then the contents can't be bought again
+	buy("BundleFirstFlight")
+	for _, id in { "PilotCap", "EmotePilotSalute", "LuggageCarryOn" } do
+		if not R.ShopService:Owns(player, id) then
+			table.insert(problems, "First Flight Pack did not grant " .. id)
+		end
+	end
+	local credits = profile.Credits
+	buy("PilotCap")
+	if profile.Credits ~= credits then
+		table.insert(problems, "charged again for an item already owned through a bundle")
+	end
+	buy("BundleFirstFlight")
+	if profile.Credits ~= credits then
+		table.insert(problems, "bought the same bundle twice")
+	end
+	-- older purchases: owning a bundle id implies everything inside it (incl. new additions)
+	R.DataService:Grant(player, "BundleFirstClass")
+	for _, id in { "OutfitFirstClass", "LuggageFirstClass", "BadgeGoldBoardingPass", "EmoteFirstClassToast", "TrailRainbow" } do
+		if not R.ShopService:Owns(player, id) then
+			table.insert(problems, "First Class Pack owner does not own " .. id)
+		end
+	end
+	-- exclusive / Robux items can't be bought with credits
+	credits = profile.Credits
+	buy("StormVisor")
+	buy("PlaneLuxury")
+	if R.ShopService:Owns(player, "StormVisor") or R.ShopService:Owns(player, "PlaneLuxury") or profile.Credits ~= credits then
+		table.insert(problems, "an exclusive / Robux item was sold for credits")
+	end
+	-- new slots: buy + equip one of each
+	local equips = {
+		{ "Outfit", "OutfitCasualFlyer" }, { "Badge", "BadgeJuniorWings" }, { "Aura", "AuraSmoke" },
+		{ "PlaneSkin", "PlaneSkyBlue" }, { "WingEffect", "WingColorTips" }, { "PlaneTrail", "PlaneTrailContrail" },
+		{ "Trail", "TrailSkyStreak" }, { "Emote", "EmoteNervous" },
+	}
+	for _, pair in equips do
+		buy(pair[2])
+		world:ClientFire("Equip", player, pair[1], pair[2])
+		world:Advance(0.6)
+		if profile.Equipped[pair[1]] ~= pair[2] then
+			table.insert(problems, "could not equip " .. pair[2] .. " in " .. pair[1])
+		end
+	end
+	world:ClientFire("Equip", player, "Luggage", "LuggageCarryOn")
+	world:ClientFire("Equip", player, "Hat", "PilotCap")
+	world:Advance(1)
+	-- wrong slot / unowned are rejected
+	world:ClientFire("Equip", player, "Hat", "OutfitPilot")
+	world:ClientFire("Equip", player, "Outfit", "OutfitGoldenTraveler")
+	world:Advance(1)
+	if profile.Equipped.Hat ~= "PilotCap" or profile.Equipped.Outfit ~= "OutfitCasualFlyer" then
+		table.insert(problems, "server accepted a wrong-slot or unowned equip")
+	end
+	-- required slots fall back to their default instead of becoming empty
+	world:ClientFire("Equip", player, "PlaneSkin", nil)
+	world:Advance(1)
+	if profile.Equipped.PlaneSkin ~= "PlaneClassic" then
+		table.insert(problems, "unequipping the plane skin should restore the classic skin")
+	end
+	-- cosmetics are built on the character, decoration only
+	R.CosmeticService:Apply(player)
+	local character = player.Character
+	local folder = character:FindFirstChild("LF_Cosmetics")
+	local shells, nonDecor = 0, 0
+	if folder then
+		for _, d in folder:GetDescendants() do
+			if d:IsA("BasePart") then
+				if d.Name == "OutfitShell" then
+					shells += 1
+				end
+				if d.CanCollide or d.CanQuery or d.CanTouch or not d.Massless then
+					nonDecor += 1
+				end
+			end
+		end
+	end
+	if shells == 0 then
+		table.insert(problems, "outfit was not built on the character")
+	end
+	if nonDecor > 0 then
+		table.insert(problems, nonDecor .. " cosmetic parts can collide / be queried / have mass")
+	end
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if not root:FindFirstChild("LF_Aura") then
+		table.insert(problems, "aura was not attached")
+	end
+	for key, value in before do
+		if humanoid[key] ~= value then
+			table.insert(problems, "equipping cosmetics changed humanoid " .. key)
+		end
+	end
+	-- emote with bubble
+	world:ClientFire("PlayEmote", player, "EmoteNervous")
+	world:Advance(0.5)
+	if not character:FindFirstChild("Head"):FindFirstChild("LF_EmoteBubble") then
+		table.insert(problems, "emote bubble not shown")
+	end
+	-- first store visit flag persists in the profile
+	world:ClientFire("StoreIntroSeen", player)
+	world:Advance(0.5)
+	if profile.Flags.StoreIntro ~= true then
+		table.insert(problems, "store intro flag not saved")
+	end
+	-- Robux bundle receipt grants the bundle and everything inside
+	local monetization = config(world, "MonetizationConfig")
+	monetization.Products.StormRiderPack.Id = 777001
+	local decision = world.Marketplace.ProcessReceipt({ PlayerId = player.UserId, ProductId = 777001, PurchaseId = "storm-1" })
+	if tostring(decision) ~= "Enum.ProductPurchaseDecision.PurchaseGranted" then
+		table.insert(problems, "storm pack receipt not granted: " .. tostring(decision))
+	end
+	for _, id in { "BundleStormRider", "StormVisor", "PlaneStorm", "WingLightning", "AuraLightning", "EmoteStormDance" } do
+		if not R.ShopService:Owns(player, id) then
+			table.insert(problems, "Storm Rider Pack did not grant " .. id)
+		end
+	end
+	-- persisted
+	R.DataService:Save(player, false)
+	local stored = world.Store["u_" .. player.UserId]
+	if not stored or stored.Equipped.Outfit ~= "OutfitCasualFlyer" or stored.Equipped.PlaneTrail ~= "PlaneTrailContrail" or not stored.Owned.AuraSmoke or stored.Flags.StoreIntro ~= true then
+		table.insert(problems, "loadout / ownership / flags not saved to the DataStore")
+	end
+	-- snapshot sent to the client lists derived bundle contents
+	local snapshot = R.DataService:Snapshot(player)
+	if not table.find(snapshot.Owned, "OutfitFirstClass") then
+		table.insert(problems, "client snapshot misses items owned through a bundle")
+	end
+	return problems
+end)
+
+local STORE_DEVICES = {
+	{ Label = "phone", Device = { Touch = true, Viewport = roblox.Vector2.new(812, 375) } },
+	{ Label = "small phone", Device = { Touch = true, Viewport = roblox.Vector2.new(740, 360) } },
+	{ Label = "tablet", Device = { Touch = true, Viewport = roblox.Vector2.new(1024, 768) } },
+	{ Label = "desktop", Device = nil },
+}
+
+for _, run in STORE_DEVICES do
+	scenario("Sky Shop UI (" .. run.Label .. "): intro, every page, previews, buy + celebrate, equip, loadout, plane look, readable", function(world)
+		local problems = {}
+		world:Boot()
+		world:Advance(1)
+		local me = world:AddPlayer("ShopFan")
+		world:AttachClient(me, run.Device)
+		world:Advance(3)
+		local R = registry(world)
+		R.DataService:AddCredits(me, 3000, "test")
+		world:Advance(1)
+		local clientFolder = world.Game:GetService("StarterPlayer"):FindFirstChild("StarterPlayerScripts"):FindFirstChild("Client")
+		local shop = world.Require(clientFolder:FindFirstChild("Controllers"):FindFirstChild("ShopController"))
+		local UIKit = world.Require(clientFolder:FindFirstChild("UI"):FindFirstChild("UIKit"))
+		local gui = me:FindFirstChildOfClass("PlayerGui"):FindFirstChild("ShopUI")
+		local function click(button)
+			world.M.signalFor(button, "MouseButton1Down"):Fire()
+			world.M.signalFor(button, "Activated"):Fire()
+			world.M.signalFor(button, "MouseButton1Up"):Fire()
+		end
+		local function find(root, name: string)
+			for _, d in root:GetDescendants() do
+				if d.Name == name then
+					return d
+				end
+			end
+			return nil
+		end
+		shop:Open()
+		world:Advance(0.5)
+		local window = find(gui, "Window")
+		local intro = window:FindFirstChild("Intro")
+		if not intro or not intro.Visible then
+			table.insert(problems, "first-time intro not shown")
+		else
+			local text = {}
+			for _, d in intro:GetDescendants() do
+				if d:IsA("TextLabel") then
+					table.insert(text, d.Text)
+				end
+			end
+			if not table.concat(text, " "):find("MAKE YOUR FLIGHT YOURS") then
+				table.insert(problems, "intro headline missing")
+			end
+			click(find(intro, "Skip"))
+			world:Advance(0.5)
+			if intro.Visible or R.DataService:Get(me).Flags.StoreIntro ~= true then
+				table.insert(problems, "skipping the intro did not close it / save the flag")
+			end
+		end
+		local content = window:FindFirstChild("Content")
+		local body = content:FindFirstChild("Body")
+		local tabs = content:FindFirstChild("Tabs")
+		local sheet = window:FindFirstChild("Sheet")
+		local scale = UIKit.Scale()
+		local tinyText, smallButtons = {}, {}
+		local function audit(root)
+			for _, d in root:GetDescendants() do
+				if (d:IsA("TextLabel") or d:IsA("TextButton")) and d.Name ~= "Particle" and visible(d) and not d.TextScaled and d.Text ~= "" then
+					if d.TextSize * scale < 9.9 then
+						tinyText[d.Text] = d.TextSize * scale
+					end
+				end
+				if d:IsA("TextButton") and visible(d) and d.Text ~= "" and d.Size.Y.Scale == 0 and d.Size.Y.Offset * scale < 29.5 then
+					smallButtons[d.Name .. ":" .. d.Text] = d.Size.Y.Offset * scale
+				end
+			end
+		end
+		local pagesSeen = 0
+		for _, name in { "Featured", "FlightGear", "Outfits", "Emotes", "Plane", "Effects", "Bundles", "Premium", "Loadout" } do
+			local tab = tabs:FindFirstChild(name)
+			if not tab then
+				table.insert(problems, "missing tab " .. name)
+			else
+				click(tab)
+				world:Advance(0.4)
+				local cards, previews, actions = 0, 0, 0
+				for _, d in body:GetDescendants() do
+					if d.Name == "ArtHolder" then
+						cards += 1
+					elseif d.Name == "Preview" and d:IsA("TextButton") then
+						previews += 1
+					elseif d.Name == "Action" then
+						actions += 1
+					end
+				end
+				if name ~= "Loadout" and (cards == 0 or previews ~= cards or actions ~= cards) then
+					table.insert(problems, string.format("%s page: %d cards, %d preview buttons, %d action buttons", name, cards, previews, actions))
+				end
+				-- grid cells must fit the body width
+				for _, d in body:GetDescendants() do
+					if d:IsA("UIGridLayout") then
+						local width = d.CellSize.X.Offset
+						if width * scale < 120 then
+							table.insert(problems, string.format("%s page: cards only %.0fpx wide", name, width * scale))
+							break
+						end
+					end
+				end
+				audit(window)
+				pagesSeen += 1
+			end
+		end
+		-- previews of different kinds of items
+		local catalog = config(world, "ShopCatalog")
+		for _, id in { "OutfitPilot", "PlaneNeon", "EmoteVictory", "AuraStars", "BundleFirstClass", "TitleCaptain", "VictoryFireworks", "PlaneTrailRainbow" } do
+			click(tabs:FindFirstChild(catalog.Get(id).Category))
+			world:Advance(0.3)
+			local cardFrame = find(body, id)
+			if not cardFrame then
+				table.insert(problems, "no card for " .. id)
+			else
+				click(cardFrame:FindFirstChild("Preview"))
+				world:Advance(0.6)
+				if not sheet.Visible or not find(sheet, "PreviewBox") then
+					table.insert(problems, "preview did not open for " .. id)
+				end
+				audit(sheet)
+				click(find(sheet, "Close"))
+				world:Advance(0.2)
+			end
+		end
+		-- buy with the confirm step, then the celebration, then equip
+		click(tabs:FindFirstChild("Outfits"))
+		world:Advance(0.3)
+		local cardFrame = find(body, "OutfitAdventurer")
+		click(cardFrame:FindFirstChild("Action"))
+		world:Advance(0.2)
+		if R.ShopService:Owns(me, "OutfitAdventurer") then
+			table.insert(problems, "a single tap bought the item (no confirm step)")
+		end
+		cardFrame = find(body, "OutfitAdventurer")
+		click(cardFrame:FindFirstChild("Action"))
+		world:Advance(1)
+		if not R.ShopService:Owns(me, "OutfitAdventurer") then
+			table.insert(problems, "confirmed purchase did not go through")
+		end
+		local celebration = window:FindFirstChild("Celebration")
+		local celebrated = false
+		for _, d in celebration:GetDescendants() do
+			if d:IsA("TextLabel") and d.Text == "PURCHASED!" then
+				celebrated = true
+			end
+		end
+		if not celebration.Visible or not celebrated then
+			table.insert(problems, "no PURCHASED! celebration")
+		end
+		local equipNow = nil
+		for _, d in celebration:GetDescendants() do
+			if d:IsA("TextButton") and d.Text == "EQUIP NOW" then
+				equipNow = d
+			end
+		end
+		if equipNow then
+			click(equipNow)
+			world:Advance(1)
+		end
+		if R.DataService:Get(me).Equipped.Outfit ~= "OutfitAdventurer" then
+			table.insert(problems, "EQUIP NOW did not equip the outfit")
+		end
+		cardFrame = find(body, "OutfitAdventurer")
+		local action = cardFrame and cardFrame:FindFirstChild("Action")
+		if not action or action.Text ~= "EQUIPPED ✔" then
+			table.insert(problems, "card does not show EQUIPPED after equipping (" .. tostring(action and action.Text) .. ")")
+		end
+		-- loadout picker equips a plane skin; the aircraft exterior changes on this client only
+		R.DataService:Grant(me, "PlaneMint")
+		world:Advance(0.5)
+		click(tabs:FindFirstChild("Loadout"))
+		world:Advance(0.3)
+		local slotTile = find(body, "PlaneSkin")
+		click(slotTile)
+		world:Advance(0.4)
+		local picked = false
+		for _, d in sheet:GetDescendants() do
+			if d:IsA("TextButton") and d.Text == "EQUIP" and not picked then
+				click(d)
+				picked = true
+			end
+		end
+		world:Advance(1)
+		if R.DataService:Get(me).Equipped.PlaneSkin ~= "PlaneMint" then
+			table.insert(problems, "loadout picker did not equip the plane skin")
+		end
+		world:Advance(0.5)
+		local exterior = world.Game:GetService("Workspace"):FindFirstChild("World"):FindFirstChild("Airplane"):FindFirstChild("Exterior")
+		local wing = exterior:FindFirstChild("Wing")
+		local mint = catalog.Get("PlaneMint").Data.Hull
+		if not wing or (wing.Color.R - mint.R) ^ 2 + (wing.Color.G - mint.G) ^ 2 > 0.001 or not exterior:FindFirstChild("LF_PlaneLook") then
+			table.insert(problems, "plane skin not shown on the aircraft exterior")
+		end
+		for _, d in exterior:FindFirstChild("LF_PlaneLook"):GetDescendants() do
+			if d:IsA("BasePart") and (d.CanCollide or d.CanQuery) then
+				table.insert(problems, "plane decoration " .. d.Name .. " can collide / be queried")
+				break
+			end
+		end
+		audit(window)
+		for text, px in tinyText do
+			table.insert(problems, string.format("text too small (%.1fpx): %s", px, text))
+		end
+		for name, px in smallButtons do
+			table.insert(problems, string.format("button too small (%.0fpx tall): %s", px, name))
+		end
+		print(string.format("      scale %.2f | pages %d", scale, pagesSeen))
+		return problems
+	end, { AllowWarnings = { "[PlaneCosmetics]" } })
+end
 
 print(string.format("\n%d/%d scenarios passed", #results - failures, #results))
 process.exit(if failures == 0 then 0 else 1)

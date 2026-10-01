@@ -234,7 +234,7 @@ function LobbyBuilder.Build(parent: Instance)
 	points.Leaderboard = leaderboard
 
 	-- kiosks
-	kiosk(root, points, "Shop", 30, -32, "DUTY FREE", "Cosmetics · Emotes · Effects", "OPEN SHOP", Color3.fromRGB(255, 190, 60))
+	kiosk(root, points, "Shop", 30, -32, "SKY SHOP", "Outfits · Emotes · Plane Skins", "OPEN SHOP", Color3.fromRGB(255, 190, 60))
 	kiosk(root, points, "Wardrobe", 45, -32, "WARDROBE", "Equip your cosmetics", "CUSTOMIZE", Color3.fromRGB(200, 110, 255))
 	kiosk(root, points, "Records", 15, -32, "FLIGHT RECORDS", "Stats · Achievements · Challenges", "VIEW RECORDS", Color3.fromRGB(80, 200, 255))
 

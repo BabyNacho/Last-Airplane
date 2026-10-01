@@ -2,7 +2,10 @@
 	ShopService
 	Flight Credit purchases and equipping. Everything is validated server-side:
 	item exists, is sold for credits, isn't already owned, player can afford it, slot matches.
-	Robux items are never purchasable with credits (and vice versa).
+	Robux items are never purchasable with credits (and vice versa) - Robux grants only come
+	from MonetizationService's receipt / game pass handling.
+	Owning a bundle implies owning everything listed in it, so bundle contents stay correct
+	even when a bundle gains new items later.
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,15 +17,25 @@ local Registry = require(script.Parent.Parent.Registry)
 
 local ShopService = {}
 
-function ShopService:Owns(player: Player, itemId: string): boolean
+local function ownsDirect(player: Player, itemId: string, passItems: { [string]: boolean }): boolean
 	local item = ShopCatalog.Get(itemId)
 	if not item then
 		return false
 	end
-	if item.Default or Registry.DataService:Owns(player, itemId) then
+	return item.Default == true or Registry.DataService:Owns(player, itemId) or passItems[itemId] == true
+end
+
+function ShopService:Owns(player: Player, itemId: string): boolean
+	local passItems = Registry.MonetizationService:PassGrantedItems(player)
+	if ownsDirect(player, itemId, passItems) then
 		return true
 	end
-	return Registry.MonetizationService:PassGrantedItems(player)[itemId] == true
+	for _, bundleId in ShopCatalog.BundlesContaining[itemId] or {} do
+		if ownsDirect(player, bundleId, passItems) then
+			return true
+		end
+	end
+	return false
 end
 
 local function result(player: Player, ok: boolean, message: string, itemId: string?)
@@ -81,9 +94,8 @@ local function onEquip(player: Player, slot: any, itemId: any)
 		return
 	end
 	if itemId == nil then
-		if slot == "Title" or slot == "Theme" then
-			itemId = ShopCatalog.DefaultEquipped[slot]
-		end
+		-- slots that always show something fall back to their default instead of empty
+		itemId = ShopCatalog.DefaultEquipped[slot]
 		Registry.DataService:SetEquipped(player, slot, itemId)
 		Registry.CosmeticService:Apply(player)
 		return
@@ -111,12 +123,21 @@ function ShopService:State(player: Player)
 		Credits = profile and profile.Credits or 0,
 		Availability = Registry.MonetizationService:Availability(),
 		Passes = Registry.MonetizationService:PassesFor(player),
+		Flags = profile and profile.Flags or {},
+		Day = math.floor(os.time() / 86400), -- UTC day for the rotating "today's picks"
 	}
 end
 
 function ShopService:Start()
 	Net.Event("ShopPurchase").OnServerEvent:Connect(onPurchase)
 	Net.Event("Equip").OnServerEvent:Connect(onEquip)
+	-- first store visit: the intro is shown once, then remembered in the profile
+	Net.Event("StoreIntroSeen").OnServerEvent:Connect(function(player)
+		if not RateLimiter.Allow(player, "Equip") then
+			return
+		end
+		Registry.DataService:SetFlag(player, "StoreIntro", true)
+	end)
 	Net.Function("GetShopState").OnServerInvoke = function(player)
 		if not RateLimiter.Allow(player, "GetProfile") then
 			return nil
