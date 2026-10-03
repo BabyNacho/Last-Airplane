@@ -1,6 +1,6 @@
 # Last-Airplane: System Spec
 
-**Status:** Gate 1 APPROVED (2026-10-02). Gate 2 (architecture) is blocked until the open configuration inputs below are resolved.
+**Status:** Gate 1 APPROVED (2026-10-02). Gate 2 (architecture) proposed in `docs/ARCHITECTURE.md`.
 
 ## 1. Purpose
 
@@ -110,20 +110,20 @@ Enforcement:
 
 No live deployment until the final checklist passes and every answer under "WHAT COULD BLOW UP THIS ACCOUNT?" is clean.
 
-## 11. Open configuration inputs
+## 11. Configuration inputs
 
-These must be resolved before Gate 2. No values may be invented.
+These were resolved on 2026-10-03. The open items are listed in `ARCHITECTURE.md` section 12.
 
 | # | Input | Value |
 |---|---|---|
-| 1 | Venue / asset | _UNRESOLVED (user to specify)_ |
-| 2 | Candle timeframe | _UNRESOLVED (user to specify)_ |
-| 3 | Strategy idea | _UNRESOLVED (user to specify)_ |
-| 4 | Manual-approval threshold ($) | _UNRESOLVED (user to specify)_ |
-| 5 | Hard risk limits (max position, daily loss, max drawdown) | _UNRESOLVED (user to specify)_ |
-| 6 | Sizing rule | _Deferred until the calibration design is presented at Gate 2_ |
+| 1 | Venue / asset | Alpaca, SPY, paper only |
+| 2 | Candle timeframe | 5-minute |
+| 3 | Strategy idea | Intraday trend-following, long/flat. No shorting, no leverage, no averaging down. Explicit entry, exit, stop and take-profit. |
+| 4 | Manual-approval threshold | Order notional > $500 requires approval. $500 or less proceeds automatically. |
+| 5 | Hard risk limits | Max position $1,000 notional. Daily loss $50. Max drawdown 5% of the strategy's starting paper equity (that equity amount is still open). |
+| 6 | Sizing rule | _Deferred until the calibration design is approved (ARCHITECTURE.md section 8)_ |
 | 7 | Deployment target | VPS |
-| 8 | Agenkit | _UNRESOLVED: option (a) licensed kit, or (b) native six-phase process_ |
+| 8 | Agenkit | Option (b): the six phases run natively |
 
 ## 12. Environment prerequisites (not yet met)
 
