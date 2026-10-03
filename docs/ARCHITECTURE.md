@@ -1,6 +1,6 @@
 # Last-Airplane: Gate 2 Architecture and Calibration Design
 
-**Status:** PROPOSED. Awaiting approval. No code until approved.
+**Status:** PROPOSED. Decisions 1–4 and 6 were approved on 2026-10-03. Sections 7.1 and 7.4 are pending review, so Gate 2 is not yet approved. No code until it is.
 **Inputs:** `docs/SPEC.md` (Gate 1, approved) plus the configuration below.
 
 | Config | Value |
@@ -11,7 +11,7 @@
 | Manual approval | Order notional **> $500** needs approval. Exactly $500 or less proceeds automatically. |
 | Max position | $1,000 notional |
 | Daily loss limit | $50 |
-| Max drawdown | 5% of the strategy's starting paper equity (**amount still open, see section 12**) |
+| Max drawdown | $500: 5% of the $10,000 allocated strategy equity, measured from peak equity to the subsequent low |
 | Agenkit | Option (b): the six phases run natively |
 | Deploy | VPS |
 
@@ -359,6 +359,15 @@ Order of checks inside `RiskGate.check(order, ledger, broker_state) -> Approve |
 4. **Sizing:** S0, S1 or S2 (section 8), plus its $ parameter.
 5. **Calibration constants and minimum sample sizes** in sections 7.1 and 7.4. Are they approved as written?
 6. **Search grid** in section 5. Is it approved as written?
+
+### Approved 2026-10-03
+
+1. Allocated strategy equity is **$10,000**.
+2. Drawdown is measured **peak-to-trough**, and the limit is fixed at 5% of starting equity, which makes it **$500**.
+3. **F1** fractional orders, paper only. Entries of $500 or less proceed automatically, subject to all risk controls. The 90 s watchdog flatten stays.
+4. **S1** sizing with a fixed risk of **$25 per trade**. S2 stays disabled until at least 200 of our own fills have been collected and validated.
+5. *(pending)* The constants in sections 7.1 and 7.4 are under review and unchanged.
+6. The **216-variant grid** is approved, on condition that the holdout stays locked and is never used to select, tune or expand the search.
 
 ## 13. Nightly self-improvement loop
 
