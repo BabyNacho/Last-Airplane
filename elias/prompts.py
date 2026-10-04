@@ -19,9 +19,9 @@ REFERENCE_SHEET = [
     ("ELIAS_JACKET", 2, "leather-jacket silhouette from behind", "full-body three-quarter back view walking away, jacket shoulders and cut clearly readable, plain dark studio", "W04"),
     ("ELIAS_RIDER", 1, "Elias + motorcycle identity", "full-body standing beside the motorcycle holding the helmet, concrete garage, even light", "W08"),
     ("ELIAS_CASUAL", 1, "casual look", "candid morning in a minimal kitchen, coffee in hand, relaxed", "W05"),
-    ("ELIAS_FORMAL", 1, "formal / luxury look", "standing in a grand hotel lobby, hands in pockets, warm brass light", "W02"),
-    ("ELIAS_ROMANTIC", 1, "romantic look", "seated at a candle-lit dinner table, soft rare half-smile toward someone off-frame", "W11"),
-    ("ELIAS_NIGHT", 1, "dark / night look", "rainy night street, face half-lit by a shop light, wet hair", "W04"),
+    ("ELIAS_FORMAL", 1, "formal / luxury look", "standing in a hotel lobby, hands in pockets, soft even interior light", "W02"),
+    ("ELIAS_ROMANTIC", 1, "romantic look", "seated at a restaurant table in warm but even evening light, face clearly lit, soft rare half-smile toward someone off-frame", "W11"),
+    ("ELIAS_NIGHT", 1, "dark / night look", "night street after rain, standing under an even streetlight and shop light, face fully and evenly readable, wet hair, natural low-light exposure", "W04"),
     ("ELIAS_CANDID", 1, "candid / street look", "long-lens street candid, walking mid-stride, unaware of the camera, daylight", "W09"),
 ]
 GF_SHEET = [
@@ -61,7 +61,7 @@ def _outfit(char, code):
 
 
 JACKET_OUTFITS = {"W04", "W08", "W11"}
-LOOK_BY_PILLAR = {"MODEL": "CANDID", "MOTO": "NIGHT", "LUX": "FORMAL", "ROMANCE": "ROMANTIC", "DARK": "NIGHT", "STREET": "CANDID", "EVERYDAY": "CASUAL", "TRAVEL": "CANDID"}
+LOOK_BY_PILLAR = {"MODEL": "CANDID", "LUX": "FORMAL", "ROMANCE": "ROMANTIC", "DARK": "NIGHT", "STREET": "CANDID", "EVERYDAY": "CASUAL", "TRAVEL": "CANDID"}
 
 
 def shot_prompt(d, beat, char=None, sty=None):
@@ -167,32 +167,57 @@ def build(d, char=None, sty=None):
     return plan
 
 
+ANCHORS = {"ELIAS": "EV_REF_ELIAS_FACE_01_v01.png", "GF": "EV_REF_GF_01_v01.png", "MOTO": "EV_REF_MOTO_01_v01.png"}
+REF_CONTROL = ("identity reference sheet image, not a finished post: neutral natural colour, no stylisation, "
+               "no dramatic grading, clear readable detail")
+
+
+def _ref_meta(subject, n):
+    """Generation order matters: generate each anchor first and approve it, then condition every other
+    image of that subject on the approved anchor (character/omni reference, IP-Adapter/InstantID, or LoRA)."""
+    if subject.startswith("ELIAS"):
+        cond = [] if (subject, n) == ("ELIAS_FACE", 1) else [ANCHORS["ELIAS"]]
+        if subject == "ELIAS_RIDER":
+            cond += ["EV_REF_ELIAS_JACKET_01_v01.png", ANCHORS["MOTO"]]
+        elif subject in ("ELIAS_NIGHT", "ELIAS_ROMANTIC"):  # both wear the jacket
+            cond += ["EV_REF_ELIAS_JACKET_01_v01.png"]
+        aspect = "4:5" if subject in ("ELIAS_FACE", "ELIAS_HAIR") else "2:3"
+    elif subject == "GF":
+        cond = [] if n == 1 else [ANCHORS["GF"]]
+        if n == 5:
+            cond += ["EV_REF_ELIAS_JACKET_02_v01.png"]
+        aspect = "4:5"
+    else:
+        cond = [] if n == 1 else [ANCHORS["MOTO"]]
+        aspect = "3:2"
+    return {"condition_on": cond, "aspect_ratio": aspect}
+
+
 def reference_sheet(char=None, sty=None):
     char, sty = char or store.character(), sty or store.styles()
     out = []
     for subject, n, purpose, desc, outfit in REFERENCE_SHEET:
-        parts = ["character reference photograph, neutral colour grade, 85mm lens", desc,
-                 _elias_lock(char, full=True), f"wearing {_outfit(char, outfit)}",
+        parts = [REF_CONTROL, "85mm lens", desc, _elias_lock(char, full=True), char["likeness_rule"], f"wearing {_outfit(char, outfit)}",
                  "; ".join(char["accessories"][a] for a in char["default_accessories"]),
                  char["elias"]["expression_default"]]
         if subject == "ELIAS_RIDER":
             parts += ["motorcycle: " + char["motorcycle"]["lock"], char["accessories"]["helmet"], char["accessories"]["gloves"]]
-        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose,
+        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose, **_ref_meta(subject, n),
                     "image_prompt": _join(parts + [char["realism_suffix"]]),
                     "negative_prompt": char["negative_prompt"]})
     g = char["girlfriend"]
     for subject, n, purpose, desc in GF_SHEET:
         extra = [char["signature_jacket"]["lock"]] if n == 5 else []
-        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose,
-                    "image_prompt": _join(["character reference photograph, neutral colour grade", desc,
-                                           g["hair"], g["style"], g["body"], g["signatures"], *extra,
-                                           "her face is never fully identifiable", char["realism_suffix"]]),
+        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose, **_ref_meta(subject, n),
+                    "image_prompt": _join([REF_CONTROL, desc, g["hair"], g["style"], g["body"], g["signatures"], *extra,
+                                           "her face is turned away, cropped or out of focus and never fully identifiable",
+                                           char["likeness_rule"], char["realism_suffix"]]),
                     "negative_prompt": char["negative_prompt"].replace("long hair, ", "")})
     m = char["motorcycle"]
     for subject, n, purpose, desc in MOTO_SHEET:
         extra = [char["accessories"]["helmet"], char["accessories"]["gloves"], m["second_helmet"]] if n == 4 else []
-        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose,
-                    "image_prompt": _join(["product reference photograph", desc, m["lock"], *extra,
+        out.append({"asset": naming.ref_name(subject, n), "establishes": purpose, **_ref_meta(subject, n),
+                    "image_prompt": _join([REF_CONTROL, "product reference photograph", desc, m["lock"], *extra,
                                            "photorealistic, physically plausible lighting and reflections, no text, no logos, no watermark"]),
                     "negative_prompt": "readable brand logos, badges, readable text, cafe racer, cruiser, chopper, dirt bike, "
                                        "spoked wheels, chrome, colour paint, deformed wheels, extra mirrors, cartoon, 3d render"})

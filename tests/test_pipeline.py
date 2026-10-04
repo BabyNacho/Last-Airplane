@@ -280,3 +280,39 @@ class IdentityConstraintTests(Base):
         self.assertIn("asymmetric zip", plan["shots"][0]["image_prompt"])
         plan = prompts.build(calendar.get(9))
         self.assertIn("naked sport motorcycle", plan["shots"][0]["image_prompt"])
+
+
+class ReferenceSheetTests(Base):
+    def test_reference_prompts_carry_locks(self):
+        from elias import prompts, store
+        c = store.character()
+        refs = prompts.reference_sheet()
+        self.assertEqual(len(refs), 24)
+        self.assertEqual(len({r["asset"] for r in refs}), 24)
+        jacket_detail = c["signature_jacket"]["lock"].split(": ", 1)[1]
+        for r in refs:
+            p = r["image_prompt"]
+            self.assertIn("no logos", p)
+            if r["asset"].startswith("EV_REF_ELIAS"):
+                for field in ("face", "hair", "body"):
+                    self.assertIn(c["elias"][field], p, r["asset"])
+                self.assertIn(c["likeness_rule"], p)
+                if "JACKET" in r["asset"] or "RIDER" in r["asset"] or "NIGHT" in r["asset"] or "ROMANTIC" in r["asset"]:
+                    self.assertIn(jacket_detail, p, r["asset"])
+            if r["asset"].startswith("EV_REF_GF"):
+                self.assertIn("never fully identifiable", p)
+                self.assertIn("gold chain bracelet", p)
+            if r["asset"].startswith("EV_REF_MOTO") or "RIDER" in r["asset"]:
+                self.assertIn(c["motorcycle"]["lock"], p)
+
+    def test_every_reference_except_anchors_is_conditioned(self):
+        from elias import prompts
+        refs = {r["asset"]: r for r in prompts.reference_sheet()}
+        anchors = set(prompts.ANCHORS.values())
+        for name, r in refs.items():
+            if name in anchors:
+                self.assertEqual(r["condition_on"], [])
+            else:
+                self.assertTrue(r["condition_on"], name)
+                for dep in r["condition_on"]:
+                    self.assertIn(dep, refs)
