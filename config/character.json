@@ -1,35 +1,51 @@
 {
-  "_comment": "IDENTITY LOCK. Every prompt is assembled from these strings. Change them only deliberately, then regenerate the reference sheet. Never edit per-post.",
+  "_comment": "IDENTITY LOCK v2 (bad-boy motorcycle archetype). Every prompt is assembled from these strings. Fields listed in 'immutable' never change across the 90 days. Change only deliberately, then regenerate the reference sheet. Original fictional character: no real person, character or creator is used as a face, identity or style source.",
+  "archetype": {
+    "primary": "bad boy + motorcycle + black leather jacket + dark romantic + dominant masculine + wealthy + mysterious",
+    "signature_combo": "dark short slightly wet hair, sharp intense eyes, fair skin, strong jaw, broad shoulders, athletic lean-muscular build, black leather motorcycle jacket, satin-black motorcycle, controlled dominant expression",
+    "not": "generic AI handsome rich guy; biker-gang cliché; motorcycle-only account; toxic or violent"
+  },
   "elias": {
     "public_name": "Elias Vane",
     "ref_token": "EV_REF_ELIAS",
     "lora_trigger": "elsvn man",
     "age": "29-year-old",
-    "face": "fair skin with realistic texture and faint pores, sharp masculine bone structure, strong defined jaw, straight narrow nose, intense slightly hooded dark brown eyes with naturally shadowed lash line (no makeup), thick straight dark eyebrows, subtle five-o'clock shadow",
-    "hair": "short dark brown-black hair, slightly messy, textured on top and shorter on the sides, natural hairline, often damp",
-    "body": "broad shoulders, lean athletic build, narrow waist, about 188 cm tall impression, upright controlled posture, not bulky",
-    "expression_default": "calm, controlled, unreadable expression",
-    "short_lock": "29-year-old man, fair skin, short dark slightly messy hair, sharp jaw, straight narrow nose, intense hooded dark eyes, thick dark brows, broad shoulders, lean athletic build"
+    "face": "fair light skin with realistic texture and faint pores, sharp masculine bone structure, strong defined jaw, straight narrow nose, intense slightly hooded dark brown eyes with naturally shadowed lash line (no makeup), thick straight dark eyebrows, light stubble",
+    "hair": "short dark brown-black hair, slightly wet-looking and messy, textured on top falling slightly forward, shorter on the sides, natural hairline",
+    "body": "broad shoulders, athletic lean-muscular build, defined but not bulky, narrow waist, about 188 cm tall impression, upright controlled posture",
+    "expression_default": "controlled, quietly dominant expression, calm unreadable eyes",
+    "short_lock": "29-year-old man, fair skin, short dark slightly wet messy hair, sharp jaw, straight narrow nose, intense hooded dark eyes, thick dark brows, broad shoulders, athletic lean-muscular build"
+  },
+  "signature_jacket": {
+    "ref_token": "EV_REF_ELIAS_JACKET",
+    "lock": "his signature black leather motorcycle jacket: aged soft black cowhide with a subtle natural sheen, asymmetric zip, snap-down lapels, fitted at the shoulders and cropped at the waist, matte black hardware, no patches, no logos, no studs",
+    "frequency": "about 35-40% of posts where he is in frame; at least 2 per week; never more than 3 in-frame posts in a row; always on rides",
+    "rule": "The jacket never changes: same leather, same zip, same collar, same fit. Only what is under it changes."
   },
   "accessories": {
     "watch": "understated steel watch with a plain black dial and black leather strap, no visible branding, left wrist",
     "ring": "simple matte black band on the right ring finger",
     "chain": "thin silver curb chain",
     "sunglasses": "black rectangular acetate sunglasses",
-    "helmet": "matte black full-face motorcycle helmet with dark smoked visor, no graphics or logos"
+    "helmet": "matte black full-face motorcycle helmet with dark smoked visor, no graphics or logos",
+    "gloves": "black leather riding gloves, short cuff, no logos"
   },
-  "default_accessories": ["watch", "ring"],
+  "default_accessories": [
+    "watch",
+    "ring"
+  ],
   "wardrobe": {
     "W01": "black fitted shirt with top button open, black tailored trousers",
     "W02": "black single-breasted suit, black shirt, no tie",
     "W03": "white-cream cotton shirt, sleeves rolled to the forearm, dark tailored trousers",
-    "W04": "dark brown-black leather jacket, black crewneck T-shirt, dark trousers",
+    "W04": "the signature black leather motorcycle jacket over a plain black crewneck T-shirt, black slim trousers, black leather boots",
     "W05": "premium plain black heavyweight T-shirt, charcoal trousers",
     "W06": "charcoal fine-knit sweater, dark trousers",
     "W07": "relaxed travel outfit: dark overshirt, plain tee, soft trousers, leather weekender",
-    "W08": "black textile motorcycle jacket, black gloves, dark denim, black boots",
+    "W08": "the signature black leather motorcycle jacket zipped, black leather riding gloves, dark slim jeans, black riding boots",
     "W09": "long black wool overcoat over black knit",
-    "W10": "black evening tuxedo, black bow tie loosened"
+    "W10": "black evening tuxedo, black bow tie loosened",
+    "W11": "the signature black leather motorcycle jacket open over a white or cream shirt, dark trousers (romantic / evening variant)"
   },
   "girlfriend": {
     "internal_codename": "M",
@@ -52,7 +68,8 @@
   },
   "motorcycle": {
     "ref_token": "EV_REF_MOTO",
-    "lock": "matte black café-racer style motorcycle, single round headlight, brown leather single seat, black spoked wheels, brushed dark exhaust, no visible brand badges or logos",
+    "lock": "satin-black premium modern naked sport motorcycle, aggressive but realistic angular LED headlight with thin daytime running lights, muscular sculpted tank, short raised tail with minimal tail light, black upside-down front forks, blacked-out frame, engine and wheels, short black underbelly exhaust, compact black seat, minimal unreadable branding",
+    "rule": "One motorcycle for the whole account: same silhouette, colour, headlight, tank, tail and exhaust. Never a café racer, cruiser, dirt bike or a different colour. No readable manufacturer badges.",
     "second_helmet": "matte cream open-face helmet with brown leather strap"
   },
   "recurring_objects": {
@@ -62,6 +79,41 @@
     "old_photo": "a faded old photograph of an empty coastal road at dusk",
     "hotel_key": "a brass hotel room key with a leather tag, number partly hidden by his thumb"
   },
+  "immutable": [
+    "elias.face",
+    "elias.hair",
+    "elias.body",
+    "elias skin tone",
+    "eye colour (dark brown)",
+    "signature_jacket.lock",
+    "motorcycle.lock",
+    "accessories.watch",
+    "accessories.ring",
+    "accessories.helmet",
+    "girlfriend.hair",
+    "girlfriend.signatures",
+    "girlfriend face never fully identifiable",
+    "no logos / no readable text",
+    "fictional, no real-person likeness"
+  ],
+  "variable": {
+    "stubble": "light stubble to short stubble; never clean-shaven baby face, never full beard",
+    "hair_state": "damp/wet-look, dry-messy or pushed back by a helmet; cut and length never change",
+    "outfit": "any wardrobe code W01-W11; jacket frequency rule applies",
+    "accessories_optional": "chain, sunglasses, gloves",
+    "expression": "controlled by default; rare half-smile (romance); rare direct stare (Days 1, 87, 90)",
+    "face_visibility": "full, direct, away, partial, back, none (per calendar)",
+    "camera_style": "any style in config/styles.json",
+    "lighting_time_location": "per calendar; locations stay unidentifiable",
+    "girlfriend_visibility": "none → absent → hand → silhouette → back → behind_camera → partial",
+    "minor_body_marks": "subtle scraped knuckles or a small healing mark only in dark-phase posts; never graphic"
+  },
+  "content_balance": {
+    "BADBOY_MOTO_STREET": 0.4,
+    "LUXURY_LIFESTYLE": 0.25,
+    "ROMANCE": 0.2,
+    "DARK_PHILOSOPHY": 0.15
+  },
   "realism_suffix": "photorealistic, natural skin texture, true-to-life proportions, physically plausible lighting and reflections, anatomically correct hands with five fingers, no text, no logos, no watermark",
-  "negative_prompt": "cartoon, anime, illustration, 3d render, CGI, plastic skin, airbrushed, over-smoothed, uncanny, doll-like, extra fingers, fused fingers, malformed hands, distorted face, asymmetrical eyes, different face, heterochromia, blue eyes, green eyes, blond hair, long hair, bodybuilder, oversized muscles, visible makeup, eyeliner, brand logos, readable text, watermark, signature, warped reflections, duplicate person, deformed motorcycle"
+  "negative_prompt": "cartoon, anime, illustration, 3d render, CGI, plastic skin, airbrushed, over-smoothed, uncanny, doll-like, extra fingers, fused fingers, malformed hands, distorted face, asymmetrical eyes, different face, heterochromia, blue eyes, green eyes, blond hair, long hair, bodybuilder, oversized muscles, visible makeup, eyeliner, brand logos, readable text, watermark, signature, warped reflections, duplicate person, deformed motorcycle, cafe racer, cruiser, chopper, dirt bike, brown leather jacket, studded jacket, patches, biker gang vest, clean-shaven, full beard"
 }

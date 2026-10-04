@@ -3,41 +3,69 @@
 > Fictional character. Photorealistic, never presented as a real human.
 > Machine-readable lock: [`config/character.json`](../config/character.json). This document explains it; the JSON is what every prompt is built from. If the two disagree, fix the JSON and regenerate the reference sheet.
 
+## 0. Archetype (v2)
+
+**Bad boy + motorcycle + black leather jacket + dark romantic + dominant masculine + wealthy + mysterious.**
+
+Signature combination, readable in one glance:
+dark short slightly wet hair + sharp intense eyes + fair skin + strong jaw + broad shoulders + athletic lean-muscular build + **the black leather motorcycle jacket** + **the satin-black motorcycle** + controlled dominant expression.
+
+He must read as *the guy with the jacket and the bike*, not a generic "AI handsome rich guy". The account is still **not** a motorcycle account: the bike is his, the account is about him.
+
+Original fictional character. Mood-board images (e.g. Pinterest) are archetype/styling inspiration only. No face, identity, outfit, pose, biography or signature from them, or from any real person or creator, is copied or used as a reference input.
+
 ## 1. Identity lock
 
 | Trait | Locked value |
 |---|---|
 | Public name | Elias Vane (handle candidates: `@eliasvane`, `@elias.vane`, `@eliasvane____` — check availability manually) |
 | Age | 29 (reads 28–31) |
-| Skin | Fair, realistic texture, faint pores. Never airbrushed. |
-| Hair | Short dark brown-black, textured top, shorter sides, natural hairline. Often damp. **Never changes style.** |
-| Eyes | Dark brown, slightly hooded, intense; lash line naturally shadowed (not makeup). |
+| Skin | Fair/light, realistic texture, faint pores. Never airbrushed. |
+| Hair | Short dark brown-black, slightly wet-looking and messy, textured top falling slightly forward, shorter sides, natural hairline. **Cut never changes.** |
+| Eyes | Dark brown, slightly hooded, sharp and intense; lash line naturally shadowed (not makeup). |
 | Brows | Thick, straight, dark. |
-| Nose / jaw | Straight narrow nose; strong defined jaw; subtle five-o'clock shadow (stubble may vary slightly). |
-| Build | ~188 cm impression, broad shoulders, lean athletic, narrow waist. Not a bodybuilder. |
-| Posture | Upright, controlled, still. Hands relaxed, never fidgeting. |
-| Signature visual | Dark hair + sharp eyes + broad shoulders + black clothing + controlled expression. |
+| Nose / jaw | Straight narrow nose; strong defined jaw; light stubble. |
+| Build | ~188 cm impression, broad shoulders, athletic lean-muscular, defined but not bulky, narrow waist. |
+| Expression | Controlled, quietly dominant, unreadable. |
+| Posture | Upright, still, takes space without moving much. |
 
-### Signature accessories (do not rotate randomly)
-- **Watch** — steel case, plain black dial, black leather strap, no branding, left wrist. Always.
-- **Ring** — simple matte black band, right ring finger. Always.
-- **Chain** — thin silver curb chain. Occasional.
-- **Sunglasses** — black rectangular acetate. Occasional, daytime.
-- **Helmet** — matte black full-face, smoked visor, no graphics.
+### The signature jacket
+Aged soft black cowhide with a subtle natural sheen, asymmetric zip, snap-down lapels, fitted at the shoulders, cropped at the waist, matte black hardware. No patches, logos or studs. **It never changes: same leather, zip, collar and fit.** Only what's under it changes (black tee, white shirt, nothing visible under a zipped ride).
+Frequency: ~35–40 % of posts where he's in frame, at least 2 a week, never more than 3 in-frame posts in a row, always on rides. Recognisable, not a uniform.
+
+### Signature accessories
+- **Watch**: steel case, plain black dial, black leather strap, no branding, left wrist. Always.
+- **Ring**: simple matte black band, right ring finger. Always.
+- **Helmet**: matte black full-face, smoked visor, no graphics.
+- **Gloves**: black leather riding gloves, short cuff.
+- **Chain** (thin silver curb) and **sunglasses** (black rectangular acetate): occasional.
 
 ### Wardrobe codes
-`W01` black fitted shirt + tailored trousers · `W02` black suit, black shirt, no tie · `W03` white/cream shirt, sleeves rolled · `W04` dark leather jacket · `W05` premium plain tee · `W06` charcoal knit · `W07` relaxed travel · `W08` motorcycle gear · `W09` long black overcoat · `W10` black tuxedo.
-No visible logos, ever. Luxury is fit, fabric and setting.
+`W04` **jacket** + black tee + black trousers + boots · `W08` **jacket** zipped for riding + gloves + dark jeans + riding boots · `W11` **jacket** open over white shirt (romantic/evening) · `W01` black fitted shirt · `W02` black suit, no tie · `W03` white/cream shirt, sleeves rolled · `W05` plain black tee · `W06` charcoal knit · `W07` relaxed travel · `W09` long black overcoat · `W10` black tuxedo.
+No visible logos, ever. Wealth shows through fit, fabric and setting.
 
 ## 2. Personality
 
 Calm. Observant. Private. Disciplined. Protective. Intelligent. Controlled arrogance. Romantic only when alone with her. Occasionally dark. Never needy.
+
+**What "bad boy" means here:** edge through look and behaviour. Night rides, leaving without explanation, rule-indifferent calm, a scraped knuckle nobody explains. It never means violence, abuse, crime or disrespect toward women.
 
 **Shown, not told.** He enters quietly, doesn't explain, rarely looks at the lens, leaves without saying where.
 
 **He never:** begs for follows · calls himself handsome/rich · brags about money · posts daily motivation · plays an "alpha" parody · insults women · glorifies violence · acts toxic for engagement · explains his life.
 
 **Camera behaviour rule:** direct eye contact is *rare* and therefore powerful (Day 1, then withheld until Day 87). Default is looking away, partial, or unaware.
+
+## 2b. Content balance
+
+| Bucket | Share | Calendar pillars |
+|---|---|---|
+| Bad boy / motorcycle / street | **40 %** (36 days) | MOTO, STREET |
+| Luxury / lifestyle | **25 %** (22–23 days) | LUX, TRAVEL, EVERYDAY |
+| Romance / girlfriend | **20 %** (18 days) | ROMANCE |
+| Dark side / philosophy | **15 %** (13–14 days) | DARK, THOUGHTS |
+
+Riding itself (bike in frame) stays ≤ ~1 post in 4. The bad-boy bucket is carried by the jacket, the street and the attitude as much as by the bike.
 
 ## 3. Mystery rules
 
@@ -60,7 +88,15 @@ She is a person, not a prop: she teases him, laughs first, takes the photos, lea
 
 ## 5. The motorcycle
 
-Matte black café-racer style, single round headlight, brown leather single seat, black spoked wheels, brushed dark exhaust, **no badges or logos**. Same bike every time (reference `EV_REF_MOTO_01–04`). Motorcycle is part of him, not the account's topic: ~1 post in 10.
+Satin-black premium modern naked sport motorcycle. Aggressive but realistic: angular LED headlight with thin running lights, muscular sculpted tank, short raised tail, black upside-down forks, blacked-out frame, engine and wheels, short black underbelly exhaust, compact black seat. Minimal, unreadable branding. **One bike for the whole account** (references `EV_REF_MOTO_01–04`): never a café racer, cruiser, dirt bike or another colour. It is not modelled on any specific manufacturer's design.
+
+## 5b. Immutable vs variable
+
+**Immutable across all 90 days:** face, eye colour and shape, nose, jaw, hairline and haircut, skin tone, body proportions, the jacket, the motorcycle, the watch, the ring, the helmet; the girlfriend's hair, bracelet and bag, and the rule that her face is never fully identifiable; no logos or readable text; fictional, with no real person's likeness.
+
+**Intentionally variable:** stubble (light to short, never clean-shaven or full beard); hair state (wet-look, dry-messy, helmet-pressed); outfit (W01–W11, jacket frequency rule); optional chain, sunglasses and gloves; expression within "controlled" (rare half-smile, rare direct stare); face visibility; camera style; light, time and location; girlfriend visibility level; subtle dark-phase marks (never graphic).
+
+Machine-readable: `immutable` / `variable` in `config/character.json`.
 
 ## 6. Recurring objects (the clue system)
 

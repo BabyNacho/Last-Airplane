@@ -9,7 +9,8 @@
 import re
 
 FORMAT_CODES = {"photo": "PHOT", "reel": "REEL", "carousel": "CARO", "story": "STORY"}
-REF_SUBJECTS = {"ELIAS_FACE", "ELIAS_BODY", "ELIAS_OUTFIT", "GF", "MOTO", "OBJECT"}
+REF_SUBJECTS = {"ELIAS_FACE", "ELIAS_HAIR", "ELIAS_BODY", "ELIAS_JACKET", "ELIAS_RIDER", "ELIAS_CASUAL",
+                "ELIAS_FORMAL", "ELIAS_ROMANTIC", "ELIAS_NIGHT", "ELIAS_CANDID", "GF", "MOTO", "OBJECT"}
 PATTERN = re.compile(
     r"^EV_(?:"
     r"D(?P<day>\d{3})_(?:STORY_(?P<story>\d{2})|(?P<fmt>PHOT|REEL|CARO)_(?P<pillar>[A-Z]+)_(?P<slug>[a-z0-9-]+)(?:_s(?P<slide>\d{2}))?)"

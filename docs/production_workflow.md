@@ -13,10 +13,10 @@ python -m elias today       # what to make today + the checklist
 | # | Step | Command / output | Exit criteria |
 |---|---|---|---|
 | 1 | Character identity sheet | `docs/character_bible.md`, `config/character.json` | Owner signs off the lock |
-| 2 | 15 Elias reference images | `python -m elias refs` → `EV_REF_ELIAS_FACE_01..08`, `EV_REF_ELIAS_BODY_01..04`, `EV_REF_ELIAS_OUTFIT_01..03` | Same person in all 15 at a glance; QA 1–5 pass |
+| 2 | 15 Elias reference images | `python -m elias refs` → face ×4, hair, body ×2, jacket ×2, rider, casual, formal, romantic, night, candid | Same person in all 15 at a glance; QA 1–5 pass |
 | 3 | Girlfriend reference | `EV_REF_GF_01..05` (no fully readable face) | Bracelet + hair + silhouette consistent |
 | 4 | Motorcycle reference | `EV_REF_MOTO_01..04` | Identical geometry, no badges |
-| 5 | Lock identity in your tool | Train a LoRA on the approved refs (trigger `elsvn man`) *or* use the tool's character/omni-reference with the FACE set attached | 9/10 test generations recognisable |
+| 5 | Lock identity in your tool | Train a LoRA on the approved 24 refs (trigger `elsvn man`) *or* use the tool's character/omni-reference with the FACE set attached | 9/10 test generations recognisable |
 | 6 | 10 test posts | `python -m elias prompts <day>` for days 1–10 | — |
 | 7 | Evaluate consistency | `qa record` each; side-by-side contact sheet with the refs | ≥ 8/10 pass |
 | 8 | Refine prompts | Edit `config/character.json` (never per-post text) | — |
