@@ -1,0 +1,18 @@
+{
+  "_comment": "Copy to workspace/settings.json (python -m elias init). Secrets are read from environment variables, never stored here.",
+  "start_date": "2026-10-12",
+  "timezone": "Europe/London",
+  "post_time_local": "19:30",
+  "graph_api": {
+    "host": "https://graph.instagram.com",
+    "version": "v23.0",
+    "ig_user_id_env": "IG_USER_ID",
+    "access_token_env": "IG_ACCESS_TOKEN",
+    "_note": "Instagram API with Instagram Login uses graph.instagram.com; with Facebook Login use https://graph.facebook.com. Check the current version in Meta's changelog."
+  },
+  "disclosure": {
+    "bio_line": "Fictional character. AI-generated visuals.",
+    "require_ai_label_confirmation": true
+  },
+  "approvers": ["owner"]
+}

@@ -1,0 +1,67 @@
+{
+  "_comment": "IDENTITY LOCK. Every prompt is assembled from these strings. Change them only deliberately, then regenerate the reference sheet. Never edit per-post.",
+  "elias": {
+    "public_name": "Elias Vane",
+    "ref_token": "EV_REF_ELIAS",
+    "lora_trigger": "elsvn man",
+    "age": "29-year-old",
+    "face": "fair skin with realistic texture and faint pores, sharp masculine bone structure, strong defined jaw, straight narrow nose, intense slightly hooded dark brown eyes with naturally shadowed lash line (no makeup), thick straight dark eyebrows, subtle five-o'clock shadow",
+    "hair": "short dark brown-black hair, slightly messy, textured on top and shorter on the sides, natural hairline, often damp",
+    "body": "broad shoulders, lean athletic build, narrow waist, about 188 cm tall impression, upright controlled posture, not bulky",
+    "expression_default": "calm, controlled, unreadable expression",
+    "short_lock": "29-year-old man, fair skin, short dark slightly messy hair, sharp jaw, straight narrow nose, intense hooded dark eyes, thick dark brows, broad shoulders, lean athletic build"
+  },
+  "accessories": {
+    "watch": "understated steel watch with a plain black dial and black leather strap, no visible branding, left wrist",
+    "ring": "simple matte black band on the right ring finger",
+    "chain": "thin silver curb chain",
+    "sunglasses": "black rectangular acetate sunglasses",
+    "helmet": "matte black full-face motorcycle helmet with dark smoked visor, no graphics or logos"
+  },
+  "default_accessories": ["watch", "ring"],
+  "wardrobe": {
+    "W01": "black fitted shirt with top button open, black tailored trousers",
+    "W02": "black single-breasted suit, black shirt, no tie",
+    "W03": "white-cream cotton shirt, sleeves rolled to the forearm, dark tailored trousers",
+    "W04": "dark brown-black leather jacket, black crewneck T-shirt, dark trousers",
+    "W05": "premium plain black heavyweight T-shirt, charcoal trousers",
+    "W06": "charcoal fine-knit sweater, dark trousers",
+    "W07": "relaxed travel outfit: dark overshirt, plain tee, soft trousers, leather weekender",
+    "W08": "black textile motorcycle jacket, black gloves, dark denim, black boots",
+    "W09": "long black wool overcoat over black knit",
+    "W10": "black evening tuxedo, black bow tie loosened"
+  },
+  "girlfriend": {
+    "internal_codename": "M",
+    "_rule": "Codename is internal only. Never published. Her name, face and identity are never fully revealed in this 90-day arc.",
+    "ref_token": "EV_REF_GF",
+    "hair": "dark brown medium-long hair with soft natural waves",
+    "style": "elegant understated style in cream, camel and black, minimal makeup",
+    "body": "slim, graceful, recognisable silhouette, about 168 cm",
+    "signatures": "thin gold chain bracelet with a small oval charm on her left wrist, tan structured leather shoulder bag",
+    "lock": "woman with dark brown medium-long softly waved hair, elegant understated cream-and-camel clothing, thin gold chain bracelet with a small oval charm on her left wrist",
+    "visibility": {
+      "none": "",
+      "absent": "her presence implied only by an object (her tan leather bag, a second cup, her bracelet); she is not in frame",
+      "hand": "only her hand and wrist with the gold bracelet are visible",
+      "silhouette": "she appears only as a soft silhouette, face not readable",
+      "back": "she is seen from behind, face not visible",
+      "partial": "her face is partly visible: cropped, turned away or softly out of focus, never fully identifiable",
+      "behind_camera": "she is the photographer, not in frame; framing feels personal and affectionate"
+    }
+  },
+  "motorcycle": {
+    "ref_token": "EV_REF_MOTO",
+    "lock": "matte black café-racer style motorcycle, single round headlight, brown leather single seat, black spoked wheels, brushed dark exhaust, no visible brand badges or logos",
+    "second_helmet": "matte cream open-face helmet with brown leather strap"
+  },
+  "recurring_objects": {
+    "book": "a worn hardcover book with a deep green cloth cover and no readable title",
+    "matchbook": "a black restaurant matchbook with an unreadable gold mark",
+    "postcard": "a faded vintage postcard, location text obscured",
+    "old_photo": "a faded old photograph of an empty coastal road at dusk",
+    "hotel_key": "a brass hotel room key with a leather tag, number partly hidden by his thumb"
+  },
+  "realism_suffix": "photorealistic, natural skin texture, true-to-life proportions, physically plausible lighting and reflections, anatomically correct hands with five fingers, no text, no logos, no watermark",
+  "negative_prompt": "cartoon, anime, illustration, 3d render, CGI, plastic skin, airbrushed, over-smoothed, uncanny, doll-like, extra fingers, fused fingers, malformed hands, distorted face, asymmetrical eyes, different face, heterochromia, blue eyes, green eyes, blond hair, long hair, bodybuilder, oversized muscles, visible makeup, eyeliner, brand logos, readable text, watermark, signature, warped reflections, duplicate person, deformed motorcycle"
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "Reel first-second hooks. Each Reel references one hook id so the experiment tracker can compare them.",
+  "hooks": {
+    "H01": {"name": "Tactile ignition", "first_second": "Extreme close-up of a glove, helmet or ignition with a sharp sound."},
+    "H02": {"name": "Walk-past", "first_second": "He is already moving toward or away from the lens; no eye contact."},
+    "H03": {"name": "Hand enters frame", "first_second": "Still frame; a second hand (hers) enters within 1s."},
+    "H04": {"name": "Screen lock", "first_second": "Phone lights up with an unreadable message."},
+    "H05": {"name": "Doors", "first_second": "Elevator or hotel door opening or closing."},
+    "H06": {"name": "The look", "first_second": "Light or head-turn that ends on a direct stare."},
+    "H07": {"name": "Wet glass POV", "first_second": "Rain, windscreen or window with city light streaks."},
+    "H09": {"name": "Place cut", "first_second": "Match-cut into a new unexplained location."},
+    "H10": {"name": "Morning texture", "first_second": "Kettle, curtains, water: everyday sound-first opener."},
+    "H11": {"name": "Departure board", "first_second": "Flickering departure board, destination unreadable."},
+    "H12": {"name": "Composure breaks", "first_second": "He is stern, then laughs because of someone off-camera."}
+  }
+}

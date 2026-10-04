@@ -1,0 +1,31 @@
+{
+  "camera": {
+    "iphone_candid": "candid smartphone photo, slightly imperfect framing, natural phone-camera grain, auto exposure, mild wide-lens distortion, unposed moment",
+    "gf_pov": "casual smartphone photo taken by his girlfriend across the table or a few steps away, intimate, slightly off-centre, unposed",
+    "street": "street photography from a distance with a 50mm lens, subject unaware of the camera, passers-by partially in frame, natural motion",
+    "editorial": "luxury fashion editorial photograph, 85mm lens, shallow depth of field, controlled soft light, muted colour grade",
+    "cinematic_night": "cinematic night photograph, 35mm lens, practical city lights, deep shadows, subtle film grain, anamorphic-like highlights",
+    "handheld_video": "handheld smartphone video frame, natural micro-shake, slight motion blur",
+    "mirror": "mirror selfie with phone partly covering the lower face, natural indoor light",
+    "pov": "first-person POV shot from his perspective, his hands visible, immersive",
+    "still_life": "intimate still-life detail photograph, natural window light, shallow depth of field, tactile textures",
+    "drone_wide": "wide cinematic landscape shot, tiny human figure for scale, natural atmosphere"
+  },
+  "time_of_day": {
+    "morning": "soft morning daylight",
+    "day": "natural overcast daylight",
+    "golden": "warm low golden-hour sun",
+    "dusk": "blue-hour dusk light with first city lights",
+    "night": "night, practical lights, deep shadows",
+    "late_night": "2 a.m. stillness, sparse lights, cold ambient glow",
+    "rain_night": "rainy night, wet reflective surfaces, light rain visible in light sources"
+  },
+  "face": {
+    "full": "his face is clearly visible",
+    "direct": "he looks directly into the lens with a calm, controlled stare",
+    "away": "he looks away from the camera, unaware or uninterested",
+    "partial": "his face is partly hidden (turned, cropped, in shadow, or behind a cup/book)",
+    "back": "seen from behind, face not visible",
+    "none": "he is not in frame or only his hands appear"
+  }
+}

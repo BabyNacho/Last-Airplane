@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+workspace/*
+!workspace/.gitkeep
+assets/*
+!assets/README.md
+!assets/references/
+assets/references/*
+!assets/references/.gitkeep

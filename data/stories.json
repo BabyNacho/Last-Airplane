@@ -1,0 +1,12 @@
+{
+  "_comment": "Casual Story ideas per phase. Stories show mood, never answers.",
+  "general": ["coffee cup, no caption", "song playing in the car (use Instagram music sticker)", "the green book, a page corner", "road from the bike, gloved hand", "dinner candle, two glasses", "rain on a window", "a poll: 'Night ride or long dinner?'", "question box: 'Ask. I might answer.'"],
+  "phases": {
+    "1": ["night garage, helmet on the seat", "espresso + book", "hotel corridor 3s clip", "poll: 'Rain or sun?'"],
+    "2": ["two cups (only)", "her bag on a chair", "a song with a love lyric, no comment", "poll: 'Should I post her?' (never answer directly)"],
+    "3": ["groceries on the passenger seat", "laptop at 1 a.m.", "gym bag", "bike chain + rag", "question box answers in one word"],
+    "4": ["black screen with ambient rain sound", "no stories for 2-3 days (the disappearance)", "a lit window at night", "return: keys dropped on a table"],
+    "5": ["flowers on a seat", "her laugh off-camera over a sunset clip", "cream helmet", "'She said hi.'"],
+    "6": ["postcard corner", "hotel key", "departure board", "unfamiliar skyline 2s", "poll: 'Where am I?' (never confirm)"]
+  }
+}

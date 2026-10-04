@@ -1,0 +1,21 @@
+{
+  "_comment": "In-character replies for selected comments. Reply to a few per post, never all. Honesty rule: if someone sincerely asks whether he is real or AI, NEVER deny it. Use the 'is_he_real' set.",
+  "categories": {
+    "who_is_she": ["She knows.", "Some things stay private.", "Not telling.", "You'll see. Maybe."],
+    "where_is_this": ["Wrong city.", "Close.", "Somewhere worth getting lost.", "Not telling."],
+    "what_does_he_do": ["Long story.", "Depends who's asking.", "Less than you think."],
+    "noticed_detail": ["You noticed.", "Good eye.", "Took you long enough."],
+    "where_did_you_go": ["Away.", "Back now.", "Long story."],
+    "compliment": ["Appreciated.", "Thank you.", "She'd agree. Sometimes."],
+    "sincere_question": ["Honestly? Still figuring that out.", "Some days are harder than they look.", "Thank you for asking. Really."],
+    "is_he_real": ["He's fictional. The story isn't finished.", "Not a real person. A real story, though.", "Created, not born. Stay anyway?"],
+    "hostile": []
+  },
+  "rules": [
+    "Never claim to be a real human or a real model.",
+    "Never imply a real person is behind the face.",
+    "No replies to hostile or sexual comments; hide/restrict per Instagram tools.",
+    "Never reply from fake accounts or create fan accounts.",
+    "Never answer a mystery fully."
+  ]
+}
