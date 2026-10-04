@@ -77,7 +77,8 @@
     "matchbook": "a black restaurant matchbook with an unreadable gold mark",
     "postcard": "a faded vintage postcard, location text obscured",
     "old_photo": "a faded old photograph of an empty coastal road at dusk",
-    "hotel_key": "a brass hotel room key with a leather tag, number partly hidden by his thumb"
+    "hotel_key": "a brass hotel room key with a leather tag, number partly hidden by his thumb",
+    "cream_helmet": "a matte cream open-face helmet with a brown leather strap"
   },
   "immutable": [
     "elias.face",
@@ -106,13 +107,15 @@
     "camera_style": "any style in config/styles.json",
     "lighting_time_location": "per calendar; locations stay unidentifiable",
     "girlfriend_visibility": "none → absent → hand → silhouette → back → behind_camera → partial",
-    "minor_body_marks": "subtle scraped knuckles or a small healing mark only in dark-phase posts; never graphic"
+    "minor_body_marks": "at most a faint trace of chain grease or a healed graze, dark-phase only; never fight wounds, never graphic"
   },
   "content_balance": {
-    "BADBOY_MOTO_STREET": 0.4,
-    "LUXURY_LIFESTYLE": 0.25,
+    "MOTO": 0.15,
+    "STREET": 0.15,
+    "MODEL": 0.1,
+    "LUX+TRAVEL+EVERYDAY": 0.25,
     "ROMANCE": 0.2,
-    "DARK_PHILOSOPHY": 0.15
+    "DARK+THOUGHTS": 0.15
   },
   "realism_suffix": "photorealistic, natural skin texture, true-to-life proportions, physically plausible lighting and reflections, anatomically correct hands with five fingers, no text, no logos, no watermark",
   "negative_prompt": "cartoon, anime, illustration, 3d render, CGI, plastic skin, airbrushed, over-smoothed, uncanny, doll-like, extra fingers, fused fingers, malformed hands, distorted face, asymmetrical eyes, different face, heterochromia, blue eyes, green eyes, blond hair, long hair, bodybuilder, oversized muscles, visible makeup, eyeliner, brand logos, readable text, watermark, signature, warped reflections, duplicate person, deformed motorcycle, cafe racer, cruiser, chopper, dirt bike, brown leather jacket, studded jacket, patches, biker gang vest, clean-shaven, full beard"

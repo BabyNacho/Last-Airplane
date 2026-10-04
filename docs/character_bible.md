@@ -31,7 +31,7 @@ Original fictional character. Mood-board images (e.g. Pinterest) are archetype/s
 
 ### The signature jacket
 Aged soft black cowhide with a subtle natural sheen, asymmetric zip, snap-down lapels, fitted at the shoulders, cropped at the waist, matte black hardware. No patches, logos or studs. **It never changes: same leather, zip, collar and fit.** Only what's under it changes (black tee, white shirt, nothing visible under a zipped ride).
-Frequency: ~35–40 % of posts where he's in frame, at least 2 a week, never more than 3 in-frame posts in a row, always on rides. Recognisable, not a uniform.
+Frequency: 35–40 % of posts where he's in frame (currently 26/68 = 38 %), at least 2 every week, never more than 3 in-frame jacket posts in a row, always on rides. Recognisable, not a uniform. Enforced by `validate`.
 
 ### Signature accessories
 - **Watch**: steel case, plain black dial, black leather strap, no branding, left wrist. Always.
@@ -48,7 +48,7 @@ No visible logos, ever. Wealth shows through fit, fabric and setting.
 
 Calm. Observant. Private. Disciplined. Protective. Intelligent. Controlled arrogance. Romantic only when alone with her. Occasionally dark. Never needy.
 
-**What "bad boy" means here:** edge through look and behaviour. Night rides, leaving without explanation, rule-indifferent calm, a scraped knuckle nobody explains. It never means violence, abuse, crime or disrespect toward women.
+**What "bad boy" means here:** calm confidence, independence, and an apparent disregard for social expectations. Night rides, leaving without explaining, not asking permission to be himself. Attractive and rebellious in attitude, never criminal: no violence, no fights, no illegal or unsafe riding (helmet on every ride, no stunts, no speeding), no disrespect toward women. `python -m elias validate` rejects calendar entries that imply otherwise.
 
 **Shown, not told.** He enters quietly, doesn't explain, rarely looks at the lens, leaves without saying where.
 
@@ -58,14 +58,19 @@ Calm. Observant. Private. Disciplined. Protective. Intelligent. Controlled arrog
 
 ## 2b. Content balance
 
-| Bucket | Share | Calendar pillars |
-|---|---|---|
-| Bad boy / motorcycle / street | **40 %** (36 days) | MOTO, STREET |
-| Luxury / lifestyle | **25 %** (22–23 days) | LUX, TRAVEL, EVERYDAY |
-| Romance / girlfriend | **20 %** (18 days) | ROMANCE |
-| Dark side / philosophy | **15 %** (13–14 days) | DARK, THOUGHTS |
+| Bucket | Share | Days | Calendar pillar |
+|---|---|---|---|
+| Motorcycle | 15 % | 13 | `MOTO` |
+| Bad boy / leather jacket / street attitude | 15 % | 14 | `STREET` |
+| Candid / model lifestyle | 10 % | 9 | `MODEL` |
+| **Bad boy subtotal** | **40 %** | **36** | |
+| Luxury / lifestyle | 25 % | 22 | `LUX`, `TRAVEL`, `EVERYDAY` |
+| Romance / girlfriend | 20 % | 18 | `ROMANCE` |
+| Dark side / philosophy | 15 % | 14 | `DARK`, `THOUGHTS` |
 
-Riding itself (bike in frame) stays ≤ ~1 post in 4. The bad-boy bucket is carried by the jacket, the street and the attitude as much as by the bike.
+Elias is the product; the motorcycle is a signature, not the niche. The bike is in frame on ~15 % of posts (14/90), at most 3 a week.
+The pillar is the post's *primary* subject. The girlfriend can still appear in a MOTO or MODEL post (e.g. her hand on his jacket on the bike, D62), and the dark mood can carry a STREET post (D48, D50, D83).
+`python -m elias balance` prints the live numbers; `validate` fails if any bucket drifts more than ±2 days.
 
 ## 3. Mystery rules
 
@@ -94,7 +99,7 @@ Satin-black premium modern naked sport motorcycle. Aggressive but realistic: ang
 
 **Immutable across all 90 days:** face, eye colour and shape, nose, jaw, hairline and haircut, skin tone, body proportions, the jacket, the motorcycle, the watch, the ring, the helmet; the girlfriend's hair, bracelet and bag, and the rule that her face is never fully identifiable; no logos or readable text; fictional, with no real person's likeness.
 
-**Intentionally variable:** stubble (light to short, never clean-shaven or full beard); hair state (wet-look, dry-messy, helmet-pressed); outfit (W01–W11, jacket frequency rule); optional chain, sunglasses and gloves; expression within "controlled" (rare half-smile, rare direct stare); face visibility; camera style; light, time and location; girlfriend visibility level; subtle dark-phase marks (never graphic).
+**Intentionally variable:** stubble (light to short, never clean-shaven or full beard); hair state (wet-look, dry-messy, helmet-pressed); outfit (W01–W11, jacket frequency rule); optional chain, sunglasses and gloves; expression within "controlled" (rare half-smile, rare direct stare); face visibility; camera style; light, time and location; girlfriend visibility level; at most a faint trace of chain grease or a healed graze in dark-phase posts (never fight wounds, never graphic).
 
 Machine-readable: `immutable` / `variable` in `config/character.json`.
 
@@ -105,10 +110,12 @@ Machine-readable: `immutable` / `variable` in `config/character.json`.
 | Green cloth-bound book, no title | D4 | D13, D22, D36, D45, D58, D69, D81 |
 | Black restaurant matchbook | D10 | D26, D42, D49, D64, D86, D89, D90 |
 | Table for two at "the" restaurant | D10 | D49 (both empty), D64 (both full), D90 |
-| Two coffees, café terrace | D16 | D66 (both hands), D82 (one cold) |
+| Two coffees, café terrace | D16 | D66 (both hands), D82 (he sits alone, her cup cold) |
 | Her gold bracelet | D17 | D45 & D85 (on *his* wrist), D58 (bookmark), D90 (on the chair) |
 | Old photo of a coastal road | D53 | D68 (they are *there*), D89 (a second photo, opposite direction) |
-| Cream second helmet | D67 | D90 |
+| Cream second helmet | D67 | D90 (on the empty chair) |
+| Her hand + his bike | D17 (hands on the tank) | D62 (her hand on his shoulder on the bike), D67 (she rides with him) |
+| Flowers | D61 (on his motorcycle seat) | D74 (at her door) |
 | Hotel key | D57 | D79, D81 |
 | Distant tower / postcard | D77 | D86 |
 
@@ -116,7 +123,7 @@ Callbacks are stored in the `callback` field of `data/calendar.json`. Never expl
 
 ## 7. Arc summary
 
-1. **Who is he?** (1–15) identity, street, bike, black, café, hotel, first empty chair.
+1. **Who is he?** (1–15) the jacket from the first post, street, bike, night ride, café, hotel, first empty chair.
 2. **There is someone** (16–30) two coffees, her hand, her silhouette, she films him, she enters frame.
 3. **The life** (31–45) groceries, laptop, gym, bike maintenance, airport, normal days.
 4. **The dark side** (46–60) unread message, empty chair, rain, old photograph, disappearance → return. Dark ≠ violent; no fake tragedy.

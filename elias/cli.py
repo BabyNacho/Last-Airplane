@@ -32,6 +32,16 @@ def cmd_validate(a):
     return 1 if errors else 0
 
 
+def cmd_balance(a):
+    r = calendar.balance_report()
+    print("Buckets (90 days):")
+    for b, v in r["buckets"].items():
+        print(f"  {b:<22} {v['days']:>3} days  {v['share']:>6.1%}  (target {v['target_days']})")
+    print(f"Jacket: {len(r['jacket_days'])}/{r['in_frame']} in-frame posts = {r['jacket_share']:.1%}; "
+          f"per week {r['jacket_per_week']}; longest run {r['jacket_longest_run']}")
+    print(f"Motorcycle: {len(r['moto_days'])}/90 = {r['moto_share']:.1%}; per week {r['moto_per_week']}")
+
+
 def _day_summary(d):
     s = store.settings()
     return (f"Day {d['day']} ({calendar.date_for(d['day'], s)}) · Phase {d['phase']} {d['phase_name']} · "
@@ -228,6 +238,7 @@ def build_parser():
 
     sub.add_parser("init", help="create workspace/settings.json").set_defaults(fn=cmd_init)
     sub.add_parser("validate", help="validate the calendar database").set_defaults(fn=cmd_validate)
+    sub.add_parser("balance", help="content balance, jacket and motorcycle frequency").set_defaults(fn=cmd_balance)
     s = sub.add_parser("calendar", help="list the 90 days")
     s.add_argument("--phase", type=int)
     s.add_argument("--status")

@@ -61,7 +61,7 @@ def _outfit(char, code):
 
 
 JACKET_OUTFITS = {"W04", "W08", "W11"}
-LOOK_BY_PILLAR = {"LUX": "FORMAL", "ROMANCE": "ROMANTIC", "DARK": "NIGHT", "STREET": "CANDID", "EVERYDAY": "CASUAL", "TRAVEL": "CANDID"}
+LOOK_BY_PILLAR = {"MODEL": "CANDID", "MOTO": "NIGHT", "LUX": "FORMAL", "ROMANCE": "ROMANTIC", "DARK": "NIGHT", "STREET": "CANDID", "EVERYDAY": "CASUAL", "TRAVEL": "CANDID"}
 
 
 def shot_prompt(d, beat, char=None, sty=None):

@@ -1,21 +1,91 @@
 {
-  "_comment": "Low-volume, relevant tags only. 0-5 per post. Never use banned/spammy or unrelated trending tags. Rotate sets; record which set was used for experiments.",
-  "max_per_post": 5,
-  "no_tag_ratio": 0.3,
-  "sets": {
-    "STREET": ["#streetstyle", "#menswearstyle", "#candidportrait", "#citynights", "#blackoutfit"],
-    "MOTO": ["#caferacer", "#nightride", "#motorcyclelife", "#bikelife", "#ridersofinstagram"],
-    "LUX": ["#quietluxury", "#tailoring", "#hotellife", "#mensfashion", "#oldmoneystyle"],
-    "ROMANCE": ["#quietlove", "#slowlove", "#datenight", "#couplesphotography", "#romanticmood"],
-    "DARK": ["#moodygrams", "#cinematicphotography", "#nightphotography", "#rainynight", "#darkaesthetic"],
-    "THOUGHTS": ["#selfrespect", "#bookquotes", "#handwritten", "#quietthoughts", "#bookstagram"],
-    "TRAVEL": ["#slowtravel", "#somewhereintheworld", "#roadtrip", "#travelmood", "#wanderlust"],
-    "EVERYDAY": ["#slowmornings", "#everydaymoments", "#morningroutine", "#simplelife", "#mensstyle"]
-  },
-  "always_avoid": ["#follow4follow", "#f4f", "#like4like", "#l4l", "#followback", "#instagood", "#alpha", "#sigma"],
-  "keywords": {
-    "_comment": "Instagram search reads the profile name field, captions and alt text. Put discoverability in alt text, not in long captions.",
-    "name_field": "Elias Vane",
-    "alt_text_terms": ["man in black suit", "motorcycle at night", "cinematic portrait", "rainy city street", "candid street photo"]
-  }
+ "_comment": "Low-volume, relevant tags only. 0-5 per post. Never use banned/spammy or unrelated trending tags. Rotate sets; record which set was used for experiments.",
+ "max_per_post": 5,
+ "no_tag_ratio": 0.3,
+ "sets": {
+  "STREET": [
+   "#streetstyle",
+   "#menswearstyle",
+   "#candidportrait",
+   "#citynights",
+   "#blackoutfit"
+  ],
+  "MOTO": [
+   "#caferacer",
+   "#nightride",
+   "#motorcyclelife",
+   "#bikelife",
+   "#ridersofinstagram"
+  ],
+  "LUX": [
+   "#quietluxury",
+   "#tailoring",
+   "#hotellife",
+   "#mensfashion",
+   "#oldmoneystyle"
+  ],
+  "ROMANCE": [
+   "#quietlove",
+   "#slowlove",
+   "#datenight",
+   "#couplesphotography",
+   "#romanticmood"
+  ],
+  "DARK": [
+   "#moodygrams",
+   "#cinematicphotography",
+   "#nightphotography",
+   "#rainynight",
+   "#darkaesthetic"
+  ],
+  "THOUGHTS": [
+   "#selfrespect",
+   "#bookquotes",
+   "#handwritten",
+   "#quietthoughts",
+   "#bookstagram"
+  ],
+  "TRAVEL": [
+   "#slowtravel",
+   "#somewhereintheworld",
+   "#roadtrip",
+   "#travelmood",
+   "#wanderlust"
+  ],
+  "EVERYDAY": [
+   "#slowmornings",
+   "#everydaymoments",
+   "#morningroutine",
+   "#simplelife",
+   "#mensstyle"
+  ],
+  "MODEL": [
+   "#candidportrait",
+   "#menswear",
+   "#modellife",
+   "#streetportrait",
+   "#everydaystyle"
+  ]
+ },
+ "always_avoid": [
+  "#follow4follow",
+  "#f4f",
+  "#like4like",
+  "#l4l",
+  "#followback",
+  "#instagood",
+  "#alpha",
+  "#sigma"
+ ],
+ "keywords": {
+  "_comment": "Instagram search reads the profile name field, captions and alt text. Put discoverability in alt text, not in long captions.",
+  "name_field": "Elias Vane",
+  "alt_text_terms": [
+   "man in black suit",
+   "motorcycle at night",
+   "cinematic portrait",
+   "rainy city street",
+   "candid street photo"
+  ]
+ }
 }

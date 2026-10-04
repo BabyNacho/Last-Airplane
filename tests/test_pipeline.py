@@ -225,3 +225,58 @@ class AnalyticsTests(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class IdentityConstraintTests(Base):
+    def _days(self):
+        import copy
+        from elias import calendar
+        return copy.deepcopy(calendar.days())
+
+    def test_current_calendar_meets_constraints(self):
+        from elias import calendar
+        self.assertEqual(calendar._identity_constraints(calendar.days()), [])
+        r = calendar.balance_report()
+        self.assertTrue(0.35 <= r["jacket_share"] <= 0.40)
+        self.assertTrue(0.12 <= r["moto_share"] <= 0.18)
+
+    def test_bucket_drift_detected(self):
+        from elias import calendar
+        ds = self._days()
+        for d in ds:
+            if d["pillar"] == "ROMANCE":
+                d["pillar"] = "MOTO"
+                d["motorcycle"] = True
+        errs = calendar._identity_constraints(ds)
+        self.assertTrue(any(e.startswith("balance: MOTO") for e in errs))
+        self.assertTrue(any(e.startswith("motorcycle:") for e in errs))
+
+    def test_jacket_rules_detected(self):
+        from elias import calendar
+        ds = self._days()
+        for d in ds[:7]:
+            if d["outfit"] in calendar.JACKET_OUTFITS:
+                d["outfit"] = "W05"
+        self.assertTrue(any("week 1" in e for e in calendar._identity_constraints(ds)))
+        ds = self._days()
+        for d in ds[:14]:
+            d["outfit"] = "W04"
+        errs = calendar._identity_constraints(ds)
+        self.assertTrue(any("consecutive" in e for e in errs))
+
+    def test_forbidden_terms_detected(self):
+        from unittest import mock
+        from elias import calendar
+        ds = self._days()
+        ds[2]["beats"] = ["he does a wheelie past the police"]
+        with mock.patch.object(calendar, "days", return_value=ds):
+            errors, _ = calendar.validate()
+        self.assertTrue(any("wheelie" in e for e in errors))
+        self.assertTrue(any("police" in e for e in errors))
+
+    def test_jacket_lock_in_prompts(self):
+        from elias import calendar, prompts
+        plan = prompts.build(calendar.get(1))
+        self.assertIn("asymmetric zip", plan["shots"][0]["image_prompt"])
+        plan = prompts.build(calendar.get(9))
+        self.assertIn("naked sport motorcycle", plan["shots"][0]["image_prompt"])

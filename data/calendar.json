@@ -7,9 +7,9 @@
    "phase_name": "WHO IS HE?",
    "pillar": "STREET",
    "format": "photo",
-   "concept": "Hero portrait, black shirt, direct but calm stare.",
+   "concept": "Hero portrait, black leather jacket, direct but calm stare.",
    "slug": "hero-portrait",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "minimal dark interior with a tall window",
    "time_of_day": "golden",
    "camera": "editorial",
@@ -20,7 +20,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "half-body portrait by a tall window, one shoulder toward camera, hands relaxed"
+    "half-body portrait by a tall window, leather jacket collar up, one shoulder toward camera, hands relaxed"
    ],
    "objects": [],
    "status": "planned"
@@ -44,7 +44,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "walking mid-stride along the pavement, glancing across the street, coat moving"
+    "walking mid-stride along the pavement, coat moving, hands in pockets, glancing across the street"
    ],
    "objects": [],
    "status": "planned"
@@ -79,7 +79,7 @@
    "day": 4,
    "phase": 1,
    "phase_name": "WHO IS HE?",
-   "pillar": "STREET",
+   "pillar": "MODEL",
    "format": "carousel",
    "concept": "Coffee shop, book open, face partially hidden.",
    "slug": "coffee-shop-book",
@@ -157,24 +157,24 @@
    "day": 7,
    "phase": 1,
    "phase_name": "WHO IS HE?",
-   "pillar": "DARK",
+   "pillar": "MOTO",
    "format": "reel",
-   "concept": "Night drive, city reflections.",
-   "slug": "night-drive-city",
-   "outfit": "W04",
-   "location": "inside a dark premium car on a city avenue",
+   "concept": "Night ride, city reflections.",
+   "slug": "night-ride",
+   "outfit": "W08",
+   "location": "city avenue at night, seen from the motorcycle",
    "time_of_day": "night",
    "camera": "pov",
    "face": "none",
    "girlfriend": "none",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "statement",
    "hook": "H07",
    "callback": null,
    "beats": [
-    "POV: hand on steering wheel, watch visible, city lights streak across the windscreen",
-    "traffic light reflection turns green",
-    "the car pulls away into the dark"
+    "POV over the handlebars: gloved hand on the throttle, watch at the cuff, city lights streak across the visor",
+    "a traffic light reflection turns green on the black tank",
+    "the bike pulls away into the dark"
    ],
    "objects": [],
    "status": "planned"
@@ -259,7 +259,7 @@
    "day": 11,
    "phase": 1,
    "phase_name": "WHO IS HE?",
-   "pillar": "STREET",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "Close portrait, wet hair.",
    "slug": "wet-hair-portrait",
@@ -287,7 +287,7 @@
    "format": "reel",
    "concept": "Street photo in rain.",
    "slug": "rain-street",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "narrow city street in the rain, glowing shopfronts with no readable signs",
    "time_of_day": "rain_night",
    "camera": "street",
@@ -299,7 +299,7 @@
    "callback": null,
    "beats": [
     "wide: he walks through the rain without an umbrella",
-    "medium: rain beads on the coat shoulders",
+    "medium: rain beads on the leather jacket shoulders",
     "he turns a corner and is gone"
    ],
    "objects": [],
@@ -363,23 +363,23 @@
    "day": 15,
    "phase": 1,
    "phase_name": "WHO IS HE?",
-   "pillar": "TRAVEL",
+   "pillar": "MOTO",
    "format": "reel",
-   "concept": "Travel-looking location, no location tag.",
+   "concept": "Travel-looking location reached by bike, no location tag.",
    "slug": "no-location",
-   "outfit": "W07",
+   "outfit": "W08",
    "location": "cliffside coastal road town with whitewashed walls, no landmarks",
    "time_of_day": "golden",
    "camera": "handheld_video",
    "face": "away",
    "girlfriend": "none",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "cryptic",
    "hook": "H09",
    "callback": null,
    "beats": [
-    "car door opens, his boots step onto warm stone",
-    "he walks to a low wall overlooking the sea",
+    "the bike rolls to a stop on warm stone, his boot touches down",
+    "helmet off, he walks to a low wall overlooking the sea",
     "he exhales, does not turn around"
    ],
    "objects": [],
@@ -413,22 +413,22 @@
    "day": 17,
    "phase": 2,
    "phase_name": "THERE IS SOMEONE",
-   "pillar": "ROMANCE",
+   "pillar": "MOTO",
    "format": "photo",
-   "concept": "Her hand appears beside his.",
+   "concept": "Her hand appears beside his, on the tank of his bike.",
    "slug": "her-hand",
-   "outfit": "W03",
-   "location": "restaurant table, white cloth",
+   "outfit": "W04",
+   "location": "his parked motorcycle on a quiet street",
    "time_of_day": "day",
    "camera": "still_life",
    "face": "none",
    "girlfriend": "hand",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "she_line",
    "hook": null,
    "callback": null,
    "beats": [
-    "his hand rests on the table, her hand with the gold bracelet lies beside it, almost touching"
+    "his hand rests on the black fuel tank; her hand with the gold bracelet lies beside it, almost touching"
    ],
    "objects": [],
    "status": "planned"
@@ -437,7 +437,7 @@
    "day": 18,
    "phase": 2,
    "phase_name": "THERE IS SOMEONE",
-   "pillar": "ROMANCE",
+   "pillar": "MODEL",
    "format": "reel",
    "concept": "Girlfriend filming him walking.",
    "slug": "she-films",
@@ -515,22 +515,22 @@
    "day": 21,
    "phase": 2,
    "phase_name": "THERE IS SOMEONE",
-   "pillar": "ROMANCE",
+   "pillar": "LUX",
    "format": "reel",
    "concept": "Breakfast for two.",
    "slug": "breakfast-two",
    "outfit": "W05",
    "location": "hotel room breakfast on a bed tray, white sheets",
    "time_of_day": "morning",
-   "camera": "pov",
-   "face": "none",
+   "camera": "gf_pov",
+   "face": "partial",
    "girlfriend": "hand",
    "motorcycle": false,
    "caption_style": "one_word",
    "hook": "H03",
    "callback": null,
    "beats": [
-    "POV: two cups and pastries on a tray",
+    "he sits against the headboard with a coffee, face cut by the frame, a tray with two cups and pastries",
     "her hand with the bracelet steals a croissant",
     "his hand reaches to stop it, gives up"
    ],
@@ -573,7 +573,7 @@
    "format": "photo",
    "concept": "Her perfume/bag left on chair.",
    "slug": "her-bag",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "his apartment, dark chair by a window",
    "time_of_day": "day",
    "camera": "still_life",
@@ -584,7 +584,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "her tan structured bag and a glass perfume bottle on his black chair, his jacket on the backrest"
+    "her tan structured bag and a glass perfume bottle on his black chair, his leather jacket on the backrest"
    ],
    "objects": [],
    "status": "planned"
@@ -597,7 +597,7 @@
    "format": "reel",
    "concept": "Two people walking, faces hidden.",
    "slug": "two-walking",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "bridge at blue hour",
    "time_of_day": "dusk",
    "camera": "street",
@@ -619,7 +619,7 @@
    "day": 25,
    "phase": 2,
    "phase_name": "THERE IS SOMEONE",
-   "pillar": "ROMANCE",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "His candid smile, implied she is behind camera.",
    "slug": "candid-smile",
@@ -647,7 +647,7 @@
    "format": "reel",
    "concept": "Dinner with her partially visible.",
    "slug": "dinner-partial",
-   "outfit": "W01",
+   "outfit": "W11",
    "location": "candle-lit restaurant",
    "time_of_day": "night",
    "camera": "iphone_candid",
@@ -678,16 +678,16 @@
    "outfit": "W07",
    "location": "car on a coastal highway",
    "time_of_day": "golden",
-   "camera": "pov",
-   "face": "none",
+   "camera": "gf_pov",
+   "face": "partial",
    "girlfriend": "hand",
    "motorcycle": false,
    "caption_style": "cryptic",
    "hook": "H07",
    "callback": null,
    "beats": [
-    "passenger POV: her hand taps the dashboard to the music",
-    "his hand on the wheel, watch catching sunlight",
+    "passenger view: her hand taps the dashboard to the music",
+    "his profile at the wheel, sunglasses on, watch catching the sunlight",
     "the road opens to the sea"
    ],
    "objects": [],
@@ -749,7 +749,7 @@
    "format": "reel",
    "concept": "Reel ending with her entering frame.",
    "slug": "she-enters",
-   "outfit": "W02",
+   "outfit": "W11",
    "location": "apartment doorway",
    "time_of_day": "night",
    "camera": "handheld_video",
@@ -760,7 +760,7 @@
    "hook": "H03",
    "callback": null,
    "beats": [
-    "he adjusts his cuff in a hallway mirror",
+    "he adjusts the jacket collar in a hallway mirror",
     "he looks at his watch, impatient",
     "she steps into frame from the side, face cropped, he stops"
    ],
@@ -805,14 +805,14 @@
    "location": "dark wooden desk with laptop and notebook",
    "time_of_day": "day",
    "camera": "still_life",
-   "face": "none",
+   "face": "partial",
    "girlfriend": "none",
    "motorcycle": false,
    "caption_style": "statement",
    "hook": null,
    "callback": null,
    "beats": [
-    "laptop open with a blurred unreadable screen, notebook, his hand on a pen, watch visible"
+    "he works at a dark wooden desk, face cut by the top of the frame, laptop screen blurred and unreadable, notebook, pen, watch visible"
    ],
    "objects": [],
    "status": "planned"
@@ -821,7 +821,7 @@
    "day": 33,
    "phase": 3,
    "phase_name": "THE LIFE",
-   "pillar": "EVERYDAY",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "Gym bag / post-workout candid.",
    "slug": "post-workout",
@@ -849,7 +849,7 @@
    "format": "carousel",
    "concept": "Grocery/store normal-life photo.",
    "slug": "grocery-run",
-   "outfit": "W07",
+   "outfit": "W04",
    "location": "small neighbourhood grocery, labels unreadable",
    "time_of_day": "day",
    "camera": "iphone_candid",
@@ -860,9 +860,9 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "he chooses lemons in a produce aisle",
-    "a paper bag with bread and flowers on the passenger seat",
-    "keys and bag on the kitchen counter"
+    "he chooses lemons in a produce aisle in the leather jacket",
+    "a paper bag with bread and flowers on the kitchen counter",
+    "keys and helmet on the counter"
    ],
    "objects": [],
    "status": "planned"
@@ -897,11 +897,11 @@
    "day": 36,
    "phase": 3,
    "phase_name": "THE LIFE",
-   "pillar": "EVERYDAY",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "Bookstore.",
    "slug": "bookstore",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "old bookstore with tall shelves, spines unreadable",
    "time_of_day": "day",
    "camera": "street",
@@ -912,7 +912,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "he pulls a book from a high shelf, seen through the shop window"
+    "he pulls a book from a high shelf in his leather jacket, seen through the shop window"
    ],
    "objects": [
     "book"
@@ -940,7 +940,7 @@
    "beats": [
     "curtains pulled open",
     "shower steam, cold water on his face",
-    "shirt buttoned, watch clasped, keys taken"
+    "shirt on, watch clasped, keys and helmet taken, door closes"
    ],
    "objects": [],
    "status": "planned"
@@ -949,7 +949,7 @@
    "day": 38,
    "phase": 3,
    "phase_name": "THE LIFE",
-   "pillar": "LUX",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "Restaurant alone.",
    "slug": "restaurant-alone",
@@ -1023,24 +1023,24 @@
    "day": 41,
    "phase": 3,
    "phase_name": "THE LIFE",
-   "pillar": "DARK",
+   "pillar": "MOTO",
    "format": "reel",
-   "concept": "Car interior, late-night drive.",
-   "slug": "late-night-drive",
-   "outfit": "W04",
-   "location": "car interior on an empty highway",
+   "concept": "Late-night ride: 1 a.m. fuel stop.",
+   "slug": "fuel-stop",
+   "outfit": "W08",
+   "location": "empty fuel station forecourt at 1 a.m., neon light",
    "time_of_day": "late_night",
-   "camera": "pov",
-   "face": "none",
+   "camera": "cinematic_night",
+   "face": "partial",
    "girlfriend": "none",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "one_word",
-   "hook": "H07",
+   "hook": "H01",
    "callback": null,
    "beats": [
-    "dashboard glow, the road empty",
-    "his hand turns the music down",
-    "his phone lights on the seat, he ignores it"
+    "the bike rolls in under neon light, empty forecourt",
+    "helmet resting on the tank, he drinks water, leaning on the seat",
+    "he pulls the helmet on and rides into the dark"
    ],
    "objects": [],
    "status": "planned"
@@ -1103,7 +1103,7 @@
    "day": 44,
    "phase": 3,
    "phase_name": "THE LIFE",
-   "pillar": "EVERYDAY",
+   "pillar": "MODEL",
    "format": "photo",
    "concept": "Simple T-shirt candid.",
    "slug": "black-tee-candid",
@@ -1158,11 +1158,11 @@
    "day": 46,
    "phase": 4,
    "phase_name": "THE DARK SIDE",
-   "pillar": "DARK",
+   "pillar": "STREET",
    "format": "photo",
    "concept": "Dark room, side profile.",
    "slug": "dark-profile",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "dark room with one window",
    "time_of_day": "night",
    "camera": "cinematic_night",
@@ -1173,7 +1173,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "side profile against a dark window, single sliver of light on the jaw"
+    "side profile against a dark window, leather jacket collar up, single sliver of light on the jaw"
    ],
    "objects": [],
    "status": "planned"
@@ -1208,24 +1208,24 @@
    "day": 48,
    "phase": 4,
    "phase_name": "THE DARK SIDE",
-   "pillar": "DARK",
+   "pillar": "STREET",
    "format": "reel",
    "concept": "Unread message → phone locked.",
    "slug": "unread-message",
-   "outfit": "W01",
-   "location": "dim bar counter",
+   "outfit": "W04",
+   "location": "under a streetlight on an empty street",
    "time_of_day": "night",
-   "camera": "pov",
-   "face": "none",
+   "camera": "cinematic_night",
+   "face": "partial",
    "girlfriend": "none",
    "motorcycle": false,
    "caption_style": "none",
    "hook": "H04",
    "callback": null,
    "beats": [
-    "phone lights up with a message preview (unreadable)",
+    "he leans on a wall under a streetlight; his phone lights up with an unreadable message",
     "his thumb hovers",
-    "he locks the phone and places it face down"
+    "he locks the phone, puts it away and walks off"
    ],
    "objects": [],
    "status": "planned"
@@ -1260,11 +1260,11 @@
    "day": 50,
    "phase": 4,
    "phase_name": "THE DARK SIDE",
-   "pillar": "DARK",
+   "pillar": "STREET",
    "format": "reel",
-   "concept": "Black suit, night street.",
-   "slug": "black-suit-night",
-   "outfit": "W02",
+   "concept": "Leather jacket, night street.",
+   "slug": "night-street",
+   "outfit": "W04",
    "location": "empty night street",
    "time_of_day": "night",
    "camera": "cinematic_night",
@@ -1275,7 +1275,7 @@
    "hook": "H02",
    "callback": null,
    "beats": [
-    "he walks under streetlights",
+    "he walks under streetlights in the leather jacket",
     "his shadow stretches ahead",
     "he stops, looks up at an apartment window, walks on"
    ],
@@ -1390,19 +1390,19 @@
    "format": "reel",
    "concept": "Driving in rain.",
    "slug": "driving-rain",
-   "outfit": "W04",
+   "outfit": "W09",
    "location": "car in heavy rain",
    "time_of_day": "rain_night",
-   "camera": "pov",
-   "face": "none",
+   "camera": "cinematic_night",
+   "face": "partial",
    "girlfriend": "none",
    "motorcycle": false,
    "caption_style": "none",
    "hook": "H07",
    "callback": null,
    "beats": [
-    "wipers sweep, red lights blur",
-    "his hand tightens on the wheel",
+    "from outside: his face behind a rain-streaked windscreen, wipers sweeping",
+    "red lights blur across the glass, his hand tightens on the wheel",
     "tunnel lights, then darkness"
    ],
    "objects": [],
@@ -1412,11 +1412,11 @@
    "day": 56,
    "phase": 4,
    "phase_name": "THE DARK SIDE",
-   "pillar": "DARK",
+   "pillar": "STREET",
    "format": "reel",
    "concept": "His face half-lit.",
    "slug": "face-half-lit",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "dark room",
    "time_of_day": "night",
    "camera": "cinematic_night",
@@ -1509,7 +1509,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "his hands clasped on a dark table, ring and watch, knuckles slightly scraped (subtle, not graphic)"
+    "his hands clasped on a dark table, ring and watch, a faint trace of chain grease on one knuckle"
    ],
    "objects": [],
    "status": "planned"
@@ -1522,7 +1522,7 @@
    "format": "reel",
    "concept": "Disappearance/return sequence.",
    "slug": "disappear-return",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "his apartment",
    "time_of_day": "morning",
    "camera": "handheld_video",
@@ -1533,9 +1533,9 @@
    "hook": "H09",
    "callback": null,
    "beats": [
-    "the empty apartment, dust in sunlight, calendar of unopened mail",
+    "the empty apartment, dust in sunlight, unopened mail",
     "door opens",
-    "he drops his keys and a leather weekender, sits without turning on the light"
+    "he drops his keys and helmet, sits in the leather jacket without turning on the light"
    ],
    "objects": [],
    "status": "planned"
@@ -1544,22 +1544,22 @@
    "day": 61,
    "phase": 5,
    "phase_name": "THE RELATIONSHIP",
-   "pillar": "ROMANCE",
+   "pillar": "MOTO",
    "format": "photo",
-   "concept": "Flowers on passenger seat.",
-   "slug": "flowers-passenger-seat",
+   "concept": "Flowers on his motorcycle seat.",
+   "slug": "flowers-on-bike",
    "outfit": "W04",
-   "location": "car interior by day",
+   "location": "outside an apartment building, morning",
    "time_of_day": "day",
    "camera": "still_life",
    "face": "none",
    "girlfriend": "absent",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "statement",
    "hook": null,
    "callback": null,
    "beats": [
-    "a bouquet of white flowers on the passenger seat, his hand on the gear stick"
+    "a bouquet of white flowers lying across the seat of his parked motorcycle, his helmet hanging on the mirror"
    ],
    "objects": [],
    "status": "planned"
@@ -1568,22 +1568,22 @@
    "day": 62,
    "phase": 5,
    "phase_name": "THE RELATIONSHIP",
-   "pillar": "ROMANCE",
+   "pillar": "MOTO",
    "format": "photo",
-   "concept": "Her hand on his shoulder.",
+   "concept": "Her hand on his shoulder, as he sits on the bike.",
    "slug": "hand-shoulder",
-   "outfit": "W03",
-   "location": "café",
+   "outfit": "W08",
+   "location": "quiet street beside the parked bike",
    "time_of_day": "day",
    "camera": "gf_pov",
    "face": "partial",
    "girlfriend": "hand",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "one_word",
    "hook": null,
    "callback": null,
    "beats": [
-    "from beside: her hand rests on his shoulder as he sits, he looks down at it"
+    "he sits on the parked motorcycle; her hand with the gold bracelet rests on the shoulder of his leather jacket; he looks down at it"
    ],
    "objects": [],
    "status": "planned"
@@ -1592,7 +1592,7 @@
    "day": 63,
    "phase": 5,
    "phase_name": "THE RELATIONSHIP",
-   "pillar": "ROMANCE",
+   "pillar": "MODEL",
    "format": "reel",
    "concept": "She films him laughing.",
    "slug": "she-films-laughing",
@@ -1728,7 +1728,7 @@
    "location": "the same coastal road as the old photograph",
    "time_of_day": "dusk",
    "camera": "drone_wide",
-   "face": "none",
+   "face": "back",
    "girlfriend": "back",
    "motorcycle": true,
    "caption_style": "cryptic",
@@ -1776,7 +1776,7 @@
    "day": 70,
    "phase": 5,
    "phase_name": "THE RELATIONSHIP",
-   "pillar": "ROMANCE",
+   "pillar": "STREET",
    "format": "photo",
    "concept": "Photo she took of him.",
    "slug": "she-took-this",
@@ -1932,7 +1932,7 @@
    "format": "photo",
    "concept": "Return to mysterious solo portrait.",
    "slug": "solo-portrait",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "same window as Day 1",
    "time_of_day": "dusk",
    "camera": "editorial",
@@ -1943,7 +1943,7 @@
    "hook": null,
    "callback": "D01",
    "beats": [
-    "the Day 1 composition, but he looks away from the lens"
+    "the Day 1 composition, leather jacket, but he looks away from the lens"
    ],
    "objects": [],
    "status": "planned"
@@ -1952,11 +1952,11 @@
    "day": 77,
    "phase": 6,
    "phase_name": "THE MYTH",
-   "pillar": "TRAVEL",
+   "pillar": "STREET",
    "format": "reel",
    "concept": "Unidentified city at night.",
    "slug": "unidentified-city-night",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "unfamiliar city with a distinctive tower in the distance",
    "time_of_day": "night",
    "camera": "street",
@@ -2011,15 +2011,15 @@
    "outfit": "W09",
    "location": "hotel corridor",
    "time_of_day": "night",
-   "camera": "pov",
-   "face": "none",
+   "camera": "street",
+   "face": "back",
    "girlfriend": "none",
    "motorcycle": false,
    "caption_style": "one_word",
    "hook": null,
    "callback": "D57",
    "beats": [
-    "POV: his hand holds a brass hotel key, the number hidden by his thumb, corridor ahead"
+    "over-the-shoulder: he walks a hotel corridor, a brass key in his hand, the number hidden by his thumb"
    ],
    "objects": [
     "hotel_key"
@@ -2093,14 +2093,14 @@
    "location": "the same café terrace",
    "time_of_day": "morning",
    "camera": "still_life",
-   "face": "none",
+   "face": "away",
    "girlfriend": "absent",
    "motorcycle": false,
    "caption_style": "statement",
    "hook": null,
    "callback": "D66",
    "beats": [
-    "the two-coffee table again, one cup untouched and cold, her chair empty"
+    "he sits alone at the two-coffee table, looking away down the street; the cup opposite is untouched and cold, her chair empty"
    ],
    "objects": [],
    "status": "planned"
@@ -2109,11 +2109,11 @@
    "day": 83,
    "phase": 6,
    "phase_name": "THE MYTH",
-   "pillar": "DARK",
+   "pillar": "STREET",
    "format": "reel",
    "concept": "Someone follows him from a distance.",
    "slug": "followed",
-   "outfit": "W09",
+   "outfit": "W04",
    "location": "night street",
    "time_of_day": "night",
    "camera": "street",
@@ -2163,7 +2163,7 @@
    "format": "photo",
    "concept": "Close-up of ring/watch/hand.",
    "slug": "ring-watch",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "dark table",
    "time_of_day": "night",
    "camera": "still_life",
@@ -2174,7 +2174,7 @@
    "hook": null,
    "callback": null,
    "beats": [
-    "his hand: ring, watch — and on the wrist, her thin gold bracelet"
+    "his hand: ring, watch, the leather jacket cuff, and on the wrist her thin gold bracelet"
    ],
    "objects": [],
    "status": "planned"
@@ -2216,7 +2216,7 @@
    "format": "reel",
    "concept": "He looks at camera for the first time in weeks.",
    "slug": "first-look",
-   "outfit": "W01",
+   "outfit": "W04",
    "location": "dark interior",
    "time_of_day": "night",
    "camera": "cinematic_night",
@@ -2238,23 +2238,23 @@
    "day": 88,
    "phase": 6,
    "phase_name": "THE MYTH",
-   "pillar": "TRAVEL",
+   "pillar": "MOTO",
    "format": "reel",
    "concept": "Beautiful landscape, tiny figure.",
    "slug": "tiny-figure",
-   "outfit": "W09",
+   "outfit": "W08",
    "location": "vast foggy coastline with cliffs",
    "time_of_day": "morning",
    "camera": "drone_wide",
-   "face": "none",
+   "face": "back",
    "girlfriend": "none",
-   "motorcycle": false,
+   "motorcycle": true,
    "caption_style": "none",
    "hook": "H09",
    "callback": null,
    "beats": [
     "wide fog over cliffs",
-    "a tiny figure in a long black coat at the edge",
+    "a tiny figure in a black leather jacket beside a black motorcycle at the cliff edge",
     "the camera rises, he remains still"
    ],
    "objects": [],
@@ -2264,7 +2264,7 @@
    "day": 89,
    "phase": 6,
    "phase_name": "THE MYTH",
-   "pillar": "STREET",
+   "pillar": "TRAVEL",
    "format": "photo",
    "concept": "Photo with a subtle clue referencing an old post.",
    "slug": "old-clue",
@@ -2301,7 +2301,7 @@
    "camera": "cinematic_night",
    "face": "direct",
    "girlfriend": "hand",
-   "motorcycle": true,
+   "motorcycle": false,
    "caption_style": "none",
    "hook": "H06",
    "callback": "D10",
@@ -2311,7 +2311,8 @@
     "he turns: a woman's hand touches his shoulder from off-frame — he looks at the camera — cut to black before anything is revealed"
    ],
    "objects": [
-    "matchbook"
+    "matchbook",
+    "cream_helmet"
    ],
    "status": "planned"
   }
